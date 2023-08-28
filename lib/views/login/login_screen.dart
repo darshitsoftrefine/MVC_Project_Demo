@@ -14,6 +14,17 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
 
   final TextEditingController passwordController = TextEditingController();
+  bool isInputValid = false;
+
+// A method to check the input status and update the state
+  void checkInput() {
+    setState(() {
+// Check if both email and password are not empty
+      isInputValid = emailController.text.isNotEmpty &&
+          passwordController.text.isNotEmpty;
+    });
+  }
+
 
   @override
   void initState() {
@@ -23,31 +34,31 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   elevation: 0.0,
-      //   backgroundColor: Color(0xFFF8485E),
-      //   leading: IconButton(onPressed: (){}, icon: Icon(Icons.arrow_back_ios)),
-      // ),
+      appBar: AppBar(
+        elevation: 0.0,
+        backgroundColor: const Color(0xFFF8485E),
+        leading: IconButton(onPressed: (){}, icon: const Icon(Icons.arrow_back_ios)),
+      ),
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              child: Image.asset(ConstantImages.splashBackgroundImage, fit: BoxFit.fill,),
-            ),
-            Positioned(
-              top: 65,
-              left: 120,
-              bottom: 645,
-                child: Center(child: Image.asset(ConstantImages.splashTextImage, width: 160, height: 34,))),
-            Positioned(
-              top: 215,
-              child: SingleChildScrollView(
+      body: Stack(
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: Image.asset(ConstantImages.splashBackgroundImage, fit: BoxFit.fill,),
+              ),
+              Positioned(
+                top: 35,
+                left: 110,
+                //bottom: 705,
+                  child: Center(child: Image.asset(ConstantImages.splashTextImage, width: 160, height: 34,))),
+              Positioned(
+                top: 145,
+                right: 0.1,
+                left: 0.1,
                 child: Container(
-                  padding: const EdgeInsets.only(left: 16, right: 16),
+                  padding: const EdgeInsets.only(left: 26, right: 26),
                   decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
@@ -57,144 +68,150 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   height: MediaQuery.of(context).size.height / 1.1,
                   width: MediaQuery.of(context).size.width,
-                ),
-              ),
-            ),
-                    //fillOverscroll: true,
-                    //hasScrollBody: false,
-                  Container(
-                    padding: const EdgeInsets.only(left: 16, right: 16, top: 250),
-                    //alignment: Alignment.center,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Text(ConstantStrings.loginHeading, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 22),),
-                        const SizedBox(height: 10,),
-                        RichText(
-                          text: const TextSpan(children: [
-                            TextSpan(
-                                text: ConstantStrings.signUpText,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, color: Colors.black, fontSize: 16)),
-                            TextSpan(
-                                text: ConstantStrings.signUpText2,
-                                style: TextStyle( color: Colors.red, fontWeight: FontWeight.w600, fontSize: 16)),
-                          ]),
-                        ),
-                        const SizedBox(height: 10,),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(ConstantStrings.emailHeading, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),),
-                            const SizedBox(height: 8,),
-                            TextFormField(
-                              enabled: true,
-                              style: const TextStyle(color: Colors.black),
-                              controller: emailController,
-                              obscureText: false,
-                              decoration: InputDecoration(
-                                //labelText: label, labelStyle: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w400, fontSize: 16),
-                                fillColor: Colors.grey,
-                                hintText: ConstantStrings.emailHintText,
-                                hintStyle: const TextStyle(color: Colors.grey),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  borderSide: const BorderSide(
-                                      color: Colors.black,
-                                      style: BorderStyle.solid
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  borderSide: const BorderSide(
-                                    color: Colors.red,
-                                    width: 1.0,
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  borderSide: const BorderSide(
-                                    color: Colors.grey,
-                                    width: 1.0,
-                                  ),
-                                ),
-
-
-                              ),
-                            ),
-                            //CustomField(label: "muster@muster.de", control: emailController, obs: false, hint: 'muster@muster.de ',),
-                            const SizedBox(height: 16,),
-                            const Text(ConstantStrings.passwordText, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
-                            const SizedBox(height: 8,),
-                            TextFormField(
-                              enabled: true,
-                              style: const TextStyle(color: Colors.black),
-                              controller: passwordController,
-                              obscureText: !_passwordVisible,
-                              decoration: InputDecoration(
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    // Based on passwordVisible state choose the icon
-                                    _passwordVisible
-                                        ? Icons.visibility
-                                        : Icons.visibility_off,
-                                    color: Colors.grey,
-                                  ), onPressed: () {
-                                  setState(() {
-                                    _passwordVisible = !_passwordVisible;
-                                  });
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 32),
+                      child: Column(
+                        children: [
+                          const Text(ConstantStrings.loginHeading, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 22),),
+                          const SizedBox(height: 10,),
+                          RichText(
+                            text: const TextSpan(children: [
+                              TextSpan(
+                                  text: ConstantStrings.signUpText,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold, color: Colors.black, fontSize: 16)),
+                              TextSpan(
+                                  text: ConstantStrings.signUpText2,
+                                  style: TextStyle( color: Colors.red, fontWeight: FontWeight.w600, fontSize: 16)),
+                            ]),
+                          ),
+                          const SizedBox(height: 10,),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(ConstantStrings.emailHeading, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),),
+                              const SizedBox(height: 8,),
+                              TextFormField(
+                                onChanged: (value){
+                                  checkInput();
                                 },
-                                ),
-                                //labelText: label, labelStyle: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w400, fontSize: 16),
-                                fillColor: Colors.grey,
-                                hintText: ConstantStrings.passwordHintText,
-                                hintStyle: const TextStyle(color: Colors.grey),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  borderSide: const BorderSide(
-                                      color: Colors.black,
-                                      style: BorderStyle.solid
+                                enabled: true,
+                                style: const TextStyle(color: Colors.black),
+                                controller: emailController,
+                                obscureText: false,
+                                decoration: InputDecoration(
+                                  //labelText: label, labelStyle: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w400, fontSize: 16),
+                                  fillColor: Colors.grey,
+                                  hintText: ConstantStrings.emailHintText,
+                                  hintStyle: const TextStyle(color: Colors.grey),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    borderSide: const BorderSide(
+                                        color: Colors.black,
+                                        style: BorderStyle.solid
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    borderSide: const BorderSide(
+                                      color: Colors.red,
+                                      width: 1.0,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    borderSide: const BorderSide(
+                                      color: Colors.grey,
+                                      width: 1.0,
+                                    ),
                                   ),
                                 ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  borderSide: const BorderSide(
-                                    color: Colors.red,
-                                    width: 1.0,
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  borderSide: const BorderSide(
-                                    color: Colors.grey,
-                                    width: 1.0,
-                                  ),
-                                ),
-
-
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24,),
-                        ElevatedButton(onPressed: (){},
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: emailController.text == '' && passwordController == '' ? Colors.red : Colors.grey,
-                                disabledBackgroundColor: Colors.grey,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12)
+                              //CustomField(label: "muster@muster.de", control: emailController, obs: false, hint: 'muster@muster.de ',),
+                              const SizedBox(height: 16,),
+                              const Text(ConstantStrings.passwordText, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
+                              const SizedBox(height: 8,),
+                              TextFormField(
+                                onChanged: (value){
+                                  checkInput();
+                                },
+                                enabled: true,
+                                style: const TextStyle(color: Colors.black),
+                                controller: passwordController,
+                                obscureText: !_passwordVisible,
+                                decoration: InputDecoration(
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      // Based on passwordVisible state choose the icon
+                                      _passwordVisible
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                      color: Colors.grey,
+                                    ), onPressed: () {
+                                    setState(() {
+                                      _passwordVisible = !_passwordVisible;
+                                    });
+                                  },
+                                  ),
+                                  //labelText: label, labelStyle: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w400, fontSize: 16),
+                                  fillColor: Colors.grey,
+                                  hintText: ConstantStrings.passwordHintText,
+                                  hintStyle: const TextStyle(color: Colors.grey),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    borderSide: const BorderSide(
+                                        color: Colors.black,
+                                        style: BorderStyle.solid
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    borderSide: const BorderSide(
+                                      color: Colors.red,
+                                      width: 1.0,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    borderSide: const BorderSide(
+                                      color: Colors.grey,
+                                      width: 1.0,
+                                    ),
+                                  ),
+
+
                                 ),
-                                fixedSize: const Size(393, 48)
-                            ),
-                            child: const Text(ConstantStrings.buttonText))
-                      ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 24,),
+                          ElevatedButton(onPressed:(){},
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: isInputValid ? Colors.red : Colors.grey,
+                                  //backgroundColor: emailController.text.isNotEmpty && passwordController.text.isNotEmpty ? Colors.red : Colors.grey,
+                                  //disabledBackgroundColor: Colors.grey,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12)
+                                  ),
+                                  fixedSize: const Size(393, 48)
+                              ),
+                              child: const Text(ConstantStrings.buttonText)),
+                          const SizedBox(height: 500,),
+                          //Text(ConstantStrings.bottomText, style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600, fontSize: 14))
+                        ],
+                      ),
                     ),
                   ),
-          ],
-        ),
-      ),
+                ),
+              ),
+                      //fillOverscroll: true,
+                      //hasScrollBody: false
+            ],
+          ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(bottom: 16.0, left: 85, right: 16),
+        padding: const EdgeInsets.only(bottom: 16.0, left: 80, right: 16, top: 10),
         child: Container(
           color: Colors.white,
             child: const Text(ConstantStrings.bottomText, style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600, fontSize: 14),)),

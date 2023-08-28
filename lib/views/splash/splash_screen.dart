@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(
         const Duration(seconds: 5),
             () => Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => LoginScreen())));
+            MaterialPageRoute(builder: (context) => const LoginScreen())));
   }
 
   @override
@@ -29,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          Image.asset(ConstantImages.splashBackgroundImage, fit: BoxFit.fill,),
+          Image.asset(ConstantImages.splashBackgroundImage, fit: BoxFit.fill, height: double.infinity,),
           Center(child: Image.asset(ConstantImages.splashTextImage, width: 228, height: 48.23, fit: BoxFit.fill,)),
         ],
       ),
