@@ -1,8 +1,13 @@
 import 'package:coupinos_project/views/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'controller/bloc/login_bloc.dart';
+import 'model/repository.dart';
 
-void main() {
-  runApp(const MyApp(),
+void main(){
+  runApp(BlocProvider(create: (context) => LoginBloc(repository: CoupinosLogin()),
+     child: const MyApp(),
+  )
   );
 }
 
@@ -18,6 +23,6 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: const SplashScreen(),
-    );
+      );
   }
 }

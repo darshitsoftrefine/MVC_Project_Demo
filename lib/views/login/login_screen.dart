@@ -1,6 +1,8 @@
 import 'package:coupinos_project/views/constants/image_constants.dart';
 import 'package:coupinos_project/views/constants/string_constants.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../home/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -11,15 +13,14 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   late bool _passwordVisible;
-  final TextEditingController emailController = TextEditingController();
 
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool isInputValid = false;
 
-// A method to check the input status and update the state
+
   void checkInput() {
     setState(() {
-// Check if both email and password are not empty
       isInputValid = emailController.text.isNotEmpty &&
           passwordController.text.isNotEmpty;
     });
@@ -35,6 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: kToolbarHeight + 1,
         elevation: 0.0,
         backgroundColor: const Color(0xFFF8485E),
         leading: IconButton(onPressed: (){}, icon: const Icon(Icons.arrow_back_ios)),
@@ -129,7 +131,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                               ),
-                              //CustomField(label: "muster@muster.de", control: emailController, obs: false, hint: 'muster@muster.de ',),
                               const SizedBox(height: 16,),
                               const Text(ConstantStrings.passwordText, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
                               const SizedBox(height: 8,),
@@ -144,7 +145,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 decoration: InputDecoration(
                                   suffixIcon: IconButton(
                                     icon: Icon(
-                                      // Based on passwordVisible state choose the icon
                                       _passwordVisible
                                           ? Icons.visibility
                                           : Icons.visibility_off,
@@ -155,7 +155,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                     });
                                   },
                                   ),
-                                  //labelText: label, labelStyle: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w400, fontSize: 16),
                                   fillColor: Colors.grey,
                                   hintText: ConstantStrings.passwordHintText,
                                   hintStyle: const TextStyle(color: Colors.grey),
@@ -180,18 +179,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                       width: 1.0,
                                     ),
                                   ),
-
-
                                 ),
                               ),
                             ],
                           ),
                           const SizedBox(height: 24,),
-                          ElevatedButton(onPressed:(){},
+                          ElevatedButton(onPressed: ()async{
+                            SharedPreferences prefs = await SharedPreferences.getInstance();
+                            prefs.setString('email', emailController.text);
+                            prefs.setString('password', passwordController.text);
+                            if(context.mounted) {
+                              Navigator.pushReplacement(context,
+                                  MaterialPageRoute(builder: (
+                                      context) => const HomeScreen()));
+                            }},
                               style: ElevatedButton.styleFrom(
-                                  backgroundColor: isInputValid ? Colors.red : Colors.grey,
-                                  //backgroundColor: emailController.text.isNotEmpty && passwordController.text.isNotEmpty ? Colors.red : Colors.grey,
-                                  //disabledBackgroundColor: Colors.grey,
+                                  backgroundColor: isInputValid ? const Color(0xFFF8485E) : Colors.grey,
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12)
                                   ),
@@ -199,22 +202,19 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               child: const Text(ConstantStrings.buttonText)),
                           const SizedBox(height: 500,),
-                          //Text(ConstantStrings.bottomText, style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600, fontSize: 14))
                         ],
                       ),
                     ),
                   ),
                 ),
               ),
-                      //fillOverscroll: true,
-                      //hasScrollBody: false
             ],
           ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(bottom: 16.0, left: 80, right: 16, top: 10),
         child: Container(
           color: Colors.white,
-            child: const Text(ConstantStrings.bottomText, style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600, fontSize: 14),)),
+            child: const Text(ConstantStrings.bottomText, style: TextStyle(color: Color(0xFFF8485E), fontWeight: FontWeight.w600, fontSize: 14),)),
       ),
     );
   }
