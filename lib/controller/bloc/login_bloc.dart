@@ -10,16 +10,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   LoginBloc({required this.repository}) : super(LoginInitialState()) {
     on((event, emit) async {
-      if(event is FetchLoginEvent) {
-        ContactPerson contDetails = await repository.getContactDetails();
-        emit(LoginLoadedState(contDetails: contDetails));
-      }
-      else if(event is LoginErrorState){
-        emit(LoginErrorState(message: "Error"));
+      if(event is LoginSubmittingEvent){
+        emit(LoginLoadingState());
+      } else if(event is LoginSubmittedEvent){
+        try{
+          ContactPerson contactDetails = await repository.getContactDetails();
+          emit(LoginSuccessState(contactDetails: contactDetails));
+          print("Success");
+        }catch(e){
+          print("Error $e");
+          emit(LoginFailureState());
+        }
       }
     });
   }
-
-  LoginState get initialState => LoginInitialState();
-
 }

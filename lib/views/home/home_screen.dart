@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../controller/bloc/login_bloc.dart';
-import '../../controller/bloc/login_event.dart';
 import '../../controller/bloc/login_state.dart';
 import '../../model/model.dart';
 
@@ -15,15 +14,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  late LoginBloc loginBloc;
 
 
-  @override
-  void initState() {
-    loginBloc = BlocProvider.of<LoginBloc>(context);
-    loginBloc.add(FetchLoginEvent());
-    super.initState();
-  }
+  // @override
+  // void initState() {
+  //   loginBloc = BlocProvider.of<LoginBloc>(context);
+  //   loginBloc.add(FetchLoginEvent());
+  //   super.initState();
+  // }
 
 
   @override
@@ -31,18 +29,17 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.red,
-        leading: IconButton(onPressed: (){}, icon: Icon(Icons.arrow_back_ios),),
+        leading: IconButton(onPressed: (){}, icon: const Icon(Icons.arrow_back_ios),),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
-          if (state is LoginInitialState) {
-          return buildLoading();
-          } else if (state is LoginLoadingState) {
-          return buildLoading();
-          } else if (state is LoginLoadedState) {
-          return _contactList(state.contDetails);
-          } else if (state is LoginErrorState) {
+          if (state is LoginLoadingState){
+            return buildLoading();
+          }
+          else if (state is LoginSuccessState) {
+          return _contactList(state.contactDetails);
+          } else if (state is LoginFailureState) {
           return _buildError();
           } else {
           return _buildError();
@@ -55,18 +52,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
 //Widgets...
 Widget buildLoading() {
-  return Center(
+  return const Center(
     child: SizedBox(
-      child: Column(
-        children: const [
-          CircularProgressIndicator(),
-          Text('Please Wait for a Minute', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),)
-        ],
-      ),
+      child: CircularProgressIndicator(),
     ),
   );
 }
-
 Widget _contactList(ContactPerson contDetails) {
   return Center(
     child: Padding(
@@ -134,5 +125,5 @@ Widget _contactList(ContactPerson contDetails) {
 }
 
 Widget _buildError() {
-  return const Center(child: Text('No Data Available'));
+  return const Center(child: Text('No Data Available You have entered the wrong credentials'));
 }

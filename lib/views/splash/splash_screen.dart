@@ -28,13 +28,13 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Timer(
         const Duration(seconds: 5),
-            () =>email.isEmpty ? Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const LoginScreen())) : Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => const HomeScreen())));
+            () =>Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const LoginScreen())) );
   }
       Future<String> getEmail() async {
       final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
       String? obtainedEmail = sharedPreferences.getString('email');
+      print(obtainedEmail);
       return obtainedEmail!;
     }
   @override
