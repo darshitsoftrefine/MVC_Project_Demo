@@ -9,7 +9,7 @@ class LoginLoadingState extends LoginState {}
 class LoginFailureState extends LoginState {}
 
 class LoginSuccessState extends LoginState {
-  final ContactPerson contactDetails;
+  final CoupinoModel contactDetails;
 
   LoginSuccessState({required this.contactDetails});
 }

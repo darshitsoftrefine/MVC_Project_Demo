@@ -1,6 +1,6 @@
-import 'package:coupinos_project/model/repository.dart';
 import 'package:coupinos_project/views/constants/image_constants.dart';
 import 'package:coupinos_project/views/constants/string_constants.dart';
+import 'package:coupinos_project/views/themes/custom_themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,6 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
   bool isInputValid = false;
   bool isLoad = false;
+  String loginToken = "";
 
   void checkInput() {
     setState(() {
@@ -38,32 +39,40 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(
         toolbarHeight: kToolbarHeight + 1,
         elevation: 0.0,
-        backgroundColor: const Color(0xFFF8485E),
+        backgroundColor: CustomColors.primaryColor,
         leading: IconButton(
             onPressed: () {}, icon: const Icon(Icons.arrow_back_ios)),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: CustomColors.backgroundColor,
       resizeToAvoidBottomInset: false,
       body: BlocListener<LoginBloc, LoginState>(
-        listener: (BuildContext context, state) {
+        listener: (BuildContext context, state) async {
+          SharedPreferences preferences = await SharedPreferences.getInstance();
           if (state is LoginLoadingState) {
-            print("Loading State");
+            debugPrint("Loading State");
             setState(() {
               isLoad = true;
             });
           } else if (state is LoginFailureState) {
-            print("Failure State");
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed")));
+            debugPrint("Failure State");
+            if(context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Failed")));
+            }
             setState(() {
               isLoad = false;
             });
           } else if(state is LoginSuccessState) {
-            print("Success State ${state.contactDetails.email}");
+            preferences.setString('loginToken', state.contactDetails.loginToken);
+            debugPrint("Success State ${state.contactDetails.email} ${state.contactDetails.loginToken}");
 
             _contactList(state.contactDetails);
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+            if(context.mounted) {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => const HomeScreen()));
+            }
           } else {
-            print("Initial State");
+            debugPrint("Initial State");
             Stack(
               children: [
                 SizedBox(
@@ -85,9 +94,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   left: 0.1,
                   child: Container(
                     padding: const EdgeInsets.only(left: 26, right: 26),
-                    decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
+                    decoration: BoxDecoration(
+                        color: CustomColors.backgroundColor,
+                        borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(50),
                             topRight: Radius.circular(50)
                         )
@@ -105,8 +114,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   fontWeight: FontWeight.w700, fontSize: 22),),
                             const SizedBox(height: 10,),
                             RichText(
-                              text: const TextSpan(children: [
-                                TextSpan(
+                              text: TextSpan(children: [
+                                const TextSpan(
                                     text: ConstantStrings.signUpText,
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
@@ -114,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         fontSize: 16)),
                                 TextSpan(
                                     text: ConstantStrings.signUpText2,
-                                    style: TextStyle(color: Colors.red,
+                                    style: TextStyle(color: CustomColors.primaryColor,
                                         fontWeight: FontWeight.w600,
                                         fontSize: 16)),
                               ]),
@@ -226,13 +235,14 @@ class _LoginScreenState extends State<LoginScreen> {
                               prefs.setString('email', emailController.text);
                               prefs.setString(
                                   'password', passwordController.text);
-                              BlocProvider.of<LoginBloc>(context).add(
-                                  LoginSubmittingEvent());
-                              BlocProvider.of<LoginBloc>(context).add(
-                                  LoginSubmittedEvent(
-                                      email: emailController.text,
-                                      password: passwordController.text));
-                            },
+                              if(context.mounted) {
+                                BlocProvider.of<LoginBloc>(context).add(
+                                    LoginSubmittingEvent());
+                                BlocProvider.of<LoginBloc>(context).add(
+                                    LoginSubmittedEvent(
+                                        email: emailController.text,
+                                        password: passwordController.text));
+                              }},
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: isInputValid ? const Color(
                                         0xFFF8485E) : Colors.grey,
@@ -409,19 +419,21 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
                         const SizedBox(height: 24,),
-                        isLoad ? CircularProgressIndicator() : ElevatedButton(onPressed: () async {
+
+                        isInputValid ? isLoad ? const CircularProgressIndicator() : ElevatedButton(onPressed: () async {
                           SharedPreferences prefs = await SharedPreferences
                               .getInstance();
                           prefs.setString('email', emailController.text);
-                          prefs.setString(
-                              'password', passwordController.text);
-                          BlocProvider.of<LoginBloc>(context).add(
-                              LoginSubmittingEvent());
-                          BlocProvider.of<LoginBloc>(context).add(
-                              LoginSubmittedEvent(
-                                  email: emailController.text,
-                                  password: passwordController.text));
-                        },
+                          prefs.setString('password', passwordController.text);
+                          //prefs.setString('loginToken', )
+                          if(context.mounted) {
+                            BlocProvider.of<LoginBloc>(context).add(
+                                LoginSubmittingEvent());
+                            BlocProvider.of<LoginBloc>(context).add(
+                                LoginSubmittedEvent(
+                                    email: emailController.text,
+                                    password: passwordController.text));
+                          }},
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: isInputValid ? const Color(
                                     0xFFF8485E) : Colors.grey,
@@ -430,7 +442,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 fixedSize: const Size(393, 48)
                             ),
-                            child: const Text(ConstantStrings.buttonText)),
+                            child: const Text(ConstantStrings.buttonText)): ElevatedButton(onPressed: (){}, style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)
+                            ),
+                            fixedSize: const Size(393, 48)
+                        ), child: const Text(ConstantStrings.buttonText),),
                         const SizedBox(height: 500,),
                       ],
                     ),
@@ -453,7 +471,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-  Widget _contactList(ContactPerson contDetails) {
+  Widget _contactList(CoupinoModel contDetails) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -474,7 +492,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           margin: const EdgeInsets.symmetric(horizontal: 15),
                           height: 90,
                           width: 100,
-                          child: Image.network('$baseUrl${contDetails.defaultImagePath}',
+                          child: Image.network('$baseUrl${contDetails.contactPerson.defaultImagePath}',
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -484,28 +502,31 @@ class _LoginScreenState extends State<LoginScreen> {
                               children: [
                                 Container(
                                     margin: const EdgeInsets.only(top: 9),
-                                    child: Text("Name:- ${contDetails.firstName} ${contDetails.lastName}",
+                                    child: Text("Name:- ${contDetails.contactPerson.firstName} ${contDetails.contactPerson.lastName}",
                                       style: const TextStyle(
                                           fontSize: 25, fontWeight: FontWeight.bold),
                                     )),
                                 Container(
                                   margin: const EdgeInsets.only(top: 3),
-                                  child: Text("Email Id:- ${contDetails.email}",
+                                  child: Text("Email Id:- ${contDetails.contactPerson.email}",
                                     style: const TextStyle(color: Colors.blue, fontSize: 20),
                                   ),
                                 ),
                                 Container(
                                   margin: const EdgeInsets.only(top: 3),
-                                  child: Text("Gender:- ${contDetails.gender}",
+                                  child: Text("Gender:- ${contDetails.contactPerson.gender}",
                                     style: const TextStyle(color: Colors.brown, fontSize: 15),
                                   ),
                                 ),
                                 Container(
                                   margin: const EdgeInsets.only(top: 3),
-                                  child: Text("Date of Birth:- "+
-                                      '${contDetails.dob.day}'+"/"+'${contDetails.dob.month}'+"/"+'${contDetails.dob.year}',
+                                  child: Text("Date of Birth:- ${contDetails.contactPerson.dob.day} / ${contDetails.contactPerson.dob.month} / ${contDetails.contactPerson.dob.year}",
                                     style: const TextStyle(fontSize: 15),
                                   ),
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.only(top: 3),
+                                  child: Text("Login Token:- ${contDetails.loginToken}",style: const TextStyle(fontSize: 15),),
                                 )
                               ],
                             ))

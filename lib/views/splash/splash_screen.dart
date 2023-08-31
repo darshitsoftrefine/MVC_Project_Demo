@@ -16,8 +16,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
 
   String email = "";
-  String password = "";
-
+  String loginToken = "";
   @override
   void initState() {
     getEmail().then((value) {
@@ -25,18 +24,31 @@ class _SplashScreenState extends State<SplashScreen> {
           email = value;
         });
       });
+    getToken().then((value) {
+      setState(() {
+        loginToken = value;
+      });
+    });
     super.initState();
     Timer(
         const Duration(seconds: 5),
-            () =>Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const LoginScreen())) );
+            () => loginToken.isEmpty ? Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const LoginScreen())): Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => const HomeScreen())));
   }
       Future<String> getEmail() async {
       final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
       String? obtainedEmail = sharedPreferences.getString('email');
-      print(obtainedEmail);
+      debugPrint(obtainedEmail);
       return obtainedEmail!;
     }
+
+  Future<String> getToken() async {
+    final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String? obtainedToken = sharedPreferences.getString('loginToken');
+    debugPrint("Token $obtainedToken");
+    return obtainedToken!;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

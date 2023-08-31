@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 import '../../model/model.dart';
 import '../../model/repository.dart';
 import 'login_event.dart';
@@ -14,11 +15,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         emit(LoginLoadingState());
       } else if(event is LoginSubmittedEvent){
         try{
-          ContactPerson contactDetails = await repository.getContactDetails();
+          CoupinoModel contactDetails = await repository.getContactDetails();
           emit(LoginSuccessState(contactDetails: contactDetails));
-          print("Success");
+          debugPrint("Success");
         }catch(e){
-          print("Error $e");
+          debugPrint("Error $e");
           emit(LoginFailureState());
         }
       }
