@@ -27,7 +27,7 @@ class PostGetFetch extends PostRepository {
       }),
     );
     var data = json.decode(response.body);
-    debugPrint(data['posts']);
+    print(data['posts']);
     if(response.statusCode == 200){
 
       var postedDetails = PostGetModel.fromJson(data).posts;
