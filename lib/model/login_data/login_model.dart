@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final coupinoModel = coupinoModelFromJson(jsonString);
-
 import 'dart:convert';
 
 CoupinoModel coupinoModelFromJson(String str) => CoupinoModel.fromJson(json.decode(str));

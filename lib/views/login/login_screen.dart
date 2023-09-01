@@ -4,10 +4,10 @@ import 'package:coupinos_project/views/themes/custom_themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../controller/bloc/login_bloc.dart';
-import '../../controller/bloc/login_event.dart';
-import '../../controller/bloc/login_state.dart';
-import '../../model/model.dart';
+import '../../controller/login_bloc/login_bloc.dart';
+import '../../controller/login_bloc/login_event.dart';
+import '../../controller/login_bloc/login_state.dart';
+import '../../model/login_data/login_model.dart';
 import '../home/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {

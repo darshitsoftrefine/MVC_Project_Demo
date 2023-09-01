@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../controller/bloc/login_bloc.dart';
-import '../../controller/bloc/login_event.dart';
-import '../../controller/bloc/login_state.dart';
-import '../../model/model.dart';
+import '../../controller/post_get_bloc/post_get_bloc.dart';
+import '../../controller/post_get_bloc/post_get_event.dart';
+import '../../controller/post_get_bloc/post_get_state.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,17 +14,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-    String email = "";
-    String password = "";
+    String loginToken = "";
 
   @override
   void initState() {
-    BlocProvider.of<LoginBloc>(context).add(
-        LoginSubmittingEvent());
-    BlocProvider.of<LoginBloc>(context).add(
-        LoginSubmittedEvent(
-            email: email,
-            password: password));
+    BlocProvider.of<PostGetBloc>(context).add(
+        PostGetSubmittingEvent());
+    BlocProvider.of<PostGetBloc>(context).add(
+        PostGetSubmittedEvent(loginToken: loginToken));
     super.initState();
   }
 
@@ -38,15 +34,15 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
-          if (state is LoginSuccessState){
+        child: BlocBuilder<PostGetBloc, PostGetState>(builder: (context, state) {
+          if (state is PostGetSuccessState){
             debugPrint("Success");
-            return _contactList(state.contactDetails);
+            return _postList(state.postDetails);
           }
-          else if (state is LoginLoadingState) {
+          else if (state is PostGetLoadingState) {
             debugPrint("Loading");
           return buildLoading();
-          } else if (state is LoginFailureState) {
+          } else if (state is PostGetFailureState) {
             debugPrint("Fail");
           return _buildError();
           } else {
@@ -59,8 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> provide() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    email = preferences.getString('email')!;
-    password = preferences.getString('password')!;
+    loginToken = preferences.getString('loginToken')!;
   }
 }
 
@@ -72,7 +67,7 @@ Widget buildLoading() {
     ),
   );
 }
-Widget _contactList(CoupinoModel contDetails) {
+Widget _postList(postDetails) {
   return Center(
     child: Padding(
       padding: const EdgeInsets.all(8.0),
@@ -83,73 +78,73 @@ Widget _contactList(CoupinoModel contDetails) {
             return SingleChildScrollView(
               child: Column(
                 children: [
-                  const Text("Contact Details", style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),),
+                  const Text("Post Details", style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),),
                   const SizedBox(height: 20,),
                   Card(
                     elevation: 5.0,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 15),
-                          height: 90,
-                          width: 100,
-                          child: Image.network('$baseUrl${contDetails.contactPerson.defaultImagePath}',
-                            fit: BoxFit.cover,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 15),
+                            height: 90,
+                            width: 100,
+                            child: Image.network('$baseUrl${postDetails[index].postedBy.defaultImagePath}',
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        ),
-                        Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
+                          Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                      margin: const EdgeInsets.only(top: 9),
+                                      child: Text("Name:- ${postDetails[index].postedBy.firstName} ${postDetails[index].postedBy.lastName}",
+                                        style: const TextStyle(
+                                            fontSize: 25, fontWeight: FontWeight.bold),
+                                      )),
+                                  Container(
                                     margin: const EdgeInsets.only(top: 9),
-                                    child: Text("Name:- ${contDetails.contactPerson.firstName} ${contDetails.contactPerson.lastName}",
-                                      style: const TextStyle(
-                                          fontSize: 25, fontWeight: FontWeight.bold),
-                                    )),
-                                Container(
-                                  margin: const EdgeInsets.only(top: 3),
-                                  child: Text("Email Id:- ${contDetails.contactPerson.email}",
-                                    style: const TextStyle(color: Colors.blue, fontSize: 20),
+                                    child: Text("Email Id:- ${postDetails[index].postedBy.userId}",
+                                      style: const TextStyle(color: Colors.blue, fontSize: 20),
+                                    ),
                                   ),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(top: 3),
-                                  child: Text("Gender:- ${contDetails.contactPerson.gender}",
-                                    style: const TextStyle(color: Colors.brown, fontSize: 15),
-                                  ),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(top: 3),
-                                  child: Text("Date of Birth:- ${contDetails.contactPerson.dob.day} / ${contDetails.contactPerson.dob.month} / ${contDetails.contactPerson.dob.year}",
-                                    style: const TextStyle(fontSize: 15),
-                                  ),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(top: 3),
-                                  child: Text("Login Token:- ${contDetails.loginToken}",
-                                    style: const TextStyle(fontSize: 15),
-                                  ),
-                                )
-                              ],
-                            ))
-                      ],
+                                  Container(
+                                      margin: const EdgeInsets.only(top: 9),
+                                      child: Text("Address:- ${postDetails[index].address}",
+                                        style: const TextStyle(
+                                            fontSize: 18,),
+                                      )),
+                                  Container(
+                                      margin: const EdgeInsets.only(top: 9),
+                                      child: Text("Created at:- ${postDetails[index].createdAt.day} / ${postDetails[index].createdAt.month} / ${postDetails[index].createdAt.year}",
+                                        style: const TextStyle(
+                                          fontSize: 18,),
+                                      )),
+                                  Container(
+                                    margin: const EdgeInsets.only(top: 9),
+                                    child: Row(
+                                      children: [
+                                        const Text("Status:-"),
+                                        const SizedBox(width: 10,),
+                                        const CircleAvatar(
+                                          backgroundColor: Colors.green,
+                                          radius: 5,
+                                        ),
+                                        const SizedBox(width: 5,),
+                                        Text('${postDetails[index].status}')
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ))
+                        ],
+                      ),
                     ),
                   ),
-                 SizedBox(height: 50,),
-                 Text("Address Details", style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),),
-                  Card(
-                    child: Column(
-                      children: [
-                        Container(
-                            child: Text("Street Details:- ${contDetails.address.street} ${contDetails.address.city}")),
-                        Container(
-                          child: Text("Country with Postal Code:-  ${contDetails.address.country}  ${contDetails.address.postalCode}"),
-                        )
-                      ],
-                    ),
-                  )
+                 const SizedBox(height: 50,),
                 ],
               ),
             );
@@ -159,5 +154,5 @@ Widget _contactList(CoupinoModel contDetails) {
 }
 
 Widget _buildError() {
-  return const Center(child: Text('No Data Available You have entered the wrong credentials'));
+  return const Center(child: Text('No Data Available'));
 }
