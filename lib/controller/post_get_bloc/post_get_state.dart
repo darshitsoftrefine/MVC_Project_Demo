@@ -9,7 +9,7 @@ class PostGetLoadingState extends PostGetState {}
 class PostGetFailureState extends PostGetState {}
 
 class PostGetSuccessState extends PostGetState {
-  final List<Post> postDetails;
+  final List<Posts> postDetails;
 
   PostGetSuccessState({required this.postDetails});
 }
