@@ -66,11 +66,9 @@ class _LoginScreenState extends State<LoginScreen> {
             preferences.setString('loginToken', state.contactDetails.loginToken);
             debugPrint("Success State ${state.contactDetails.email} ${state.contactDetails.loginToken}");
 
-            _contactList(state.contactDetails);
-            if(context.mounted) {
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => const HomeScreen()));
-            }
+
           } else {
             debugPrint("Initial State");
             Stack(
@@ -471,72 +469,4 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-  Widget _contactList(CoupinoModel contDetails) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView.builder(
-            itemCount: 1,
-            itemBuilder: (context, index) {
-              String baseUrl = 'https://coupinos-app.azurewebsites.net';
-              return Column(
-                children: [
-                  const Text("Contact Details", style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),),
-                  const SizedBox(height: 20,),
-                  Card(
-                    elevation: 5.0,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 15),
-                          height: 90,
-                          width: 100,
-                          child: Image.network('$baseUrl${contDetails.contactPerson.defaultImagePath}',
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                    margin: const EdgeInsets.only(top: 9),
-                                    child: Text("Name:- ${contDetails.contactPerson.firstName} ${contDetails.contactPerson.lastName}",
-                                      style: const TextStyle(
-                                          fontSize: 25, fontWeight: FontWeight.bold),
-                                    )),
-                                Container(
-                                  margin: const EdgeInsets.only(top: 3),
-                                  child: Text("Email Id:- ${contDetails.contactPerson.email}",
-                                    style: const TextStyle(color: Colors.blue, fontSize: 20),
-                                  ),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(top: 3),
-                                  child: Text("Gender:- ${contDetails.contactPerson.gender}",
-                                    style: const TextStyle(color: Colors.brown, fontSize: 15),
-                                  ),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(top: 3),
-                                  child: Text("Date of Birth:- ${contDetails.contactPerson.dob.day} / ${contDetails.contactPerson.dob.month} / ${contDetails.contactPerson.dob.year}",
-                                    style: const TextStyle(fontSize: 15),
-                                  ),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(top: 3),
-                                  child: Text("Login Token:- ${contDetails.loginToken}",style: const TextStyle(fontSize: 15),),
-                                )
-                              ],
-                            ))
-                      ],
-                    ),
-                  ),
-                ],
-              );
-            }),
-      ),
-    );
-  }
-  }
+}

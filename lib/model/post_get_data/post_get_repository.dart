@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 abstract class PostRepository{
-  Future<List<Posts>?> getPostDetails();
+  Future<List<Posts>?> getPostDetails(int radius, int pageSize, int page, double latitude, double longitude);
 }
 
 class PostGetFetch extends PostRepository {
 
   @override
-  Future<List<Posts>?> getPostDetails() async {
+  Future<List<Posts>?> getPostDetails(radius, pageSize, page, latitude, longitude) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String? obtainedToken = sharedPreferences.getString('loginToken');
     var response = await http.post(Uri.parse('https://coupinos-app.azurewebsites.net/post/get'),

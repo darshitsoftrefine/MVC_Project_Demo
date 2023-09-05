@@ -1,7 +1,6 @@
 import 'package:coupinos_project/model/login_data/login_repository.dart';
 import 'package:coupinos_project/model/post_get_data/post_get_repository.dart';
 import 'package:coupinos_project/views/splash/splash_screen.dart';
-import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'controller/login_bloc/login_bloc.dart';
@@ -13,10 +12,9 @@ void main(){
       BlocProvider(create: (context) => LoginBloc(repository: CoupinosLogin())),
     ],
        child:BlocProvider(create: (context) => PostGetBloc(repository: PostGetFetch()),
-         child: DevicePreview(builder: (BuildContext context) => MyApp(),
+         child: MyApp(),
             ),
        )
-    ),
   );
 }
 

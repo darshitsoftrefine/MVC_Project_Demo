@@ -12,18 +12,10 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-
 class _SplashScreenState extends State<SplashScreen> {
-
-  String email = "";
   String loginToken = "";
   @override
   void initState() {
-    getEmail().then((value) {
-        setState(() {
-          email = value;
-        });
-      });
     getToken().then((value) {
       setState(() {
         loginToken = value;
@@ -36,12 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
             MaterialPageRoute(builder: (context) => const LoginScreen())): Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (context) => const HomeScreen())));
   }
-      Future<String> getEmail() async {
-      final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-      String? obtainedEmail = sharedPreferences.getString('email');
-      debugPrint(obtainedEmail);
-      return obtainedEmail!;
-    }
+
 
   Future<String> getToken() async {
     final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -49,6 +36,8 @@ class _SplashScreenState extends State<SplashScreen> {
     debugPrint("Token $obtainedToken");
     return obtainedToken!;
   }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
