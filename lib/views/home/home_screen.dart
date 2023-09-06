@@ -196,7 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   const SizedBox(height: 2,),
                                                   ValueListenableBuilder(valueListenable: local,
                                                     builder: (BuildContext context, String value, Widget? child) {
-                                                    print(value);
+                                                    getAddressFromLatLng(latitude, longitude);
                                                     return Text(value, style: TextStyle(fontSize: 10),);
                                                     },
                                                   )
@@ -329,6 +329,7 @@ class _HomeScreenState extends State<HomeScreen> {
         final Placemark place = placemarks[0];
         //print("Hello ${place.country}");
         local.value = place.country!;
+        print("Hello ${local.value}");
         return place.country;
       } else {
         return 'Location not found';
