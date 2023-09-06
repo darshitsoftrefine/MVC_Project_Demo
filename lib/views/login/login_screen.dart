@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../controller/login_bloc/login_bloc.dart';
 import '../../controller/login_bloc/login_event.dart';
 import '../../controller/login_bloc/login_state.dart';
-import '../../model/login_data/login_model.dart';
 import '../home/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -65,10 +64,11 @@ class _LoginScreenState extends State<LoginScreen> {
           } else if(state is LoginSuccessState) {
             preferences.setString('loginToken', state.contactDetails.loginToken);
             debugPrint("Success State ${state.contactDetails.email} ${state.contactDetails.loginToken}");
-
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const HomeScreen()));
-
+              if(context.mounted) {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(
+                        builder: (context) => const HomeScreen()));
+              }
           } else {
             debugPrint("Initial State");
             Stack(

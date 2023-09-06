@@ -10,12 +10,11 @@ void main(){
   runApp(MultiBlocProvider(
     providers: [
       BlocProvider(create: (context) => LoginBloc(repository: CoupinosLogin())),
+      BlocProvider(create: (context) => PostGetBloc(repository: PostGetFetch())),
     ],
-       child:BlocProvider(create: (context) => PostGetBloc(repository: PostGetFetch()),
          child: MyApp(),
             ),
-       )
-  );
+       );
 }
 
 class MyApp extends StatelessWidget {

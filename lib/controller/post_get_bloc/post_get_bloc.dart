@@ -14,7 +14,7 @@ class PostGetBloc extends Bloc<PostGetEvent, PostGetState> {
         emit(PostGetLoadingState());
       } else if(event is PostGetSubmittedEvent){
         try{
-          List<Posts> postDetails = (await repository.getPostDetails()) as List<Posts>;
+          List<Posts> postDetails = (await repository.getPostDetails(10, 0, 0, 72.50369833333333, 23.034296666666666)) as List<Posts>;
           emit(PostGetSuccessState(postDetails: postDetails));
           debugPrint("Success");
         }catch(e){

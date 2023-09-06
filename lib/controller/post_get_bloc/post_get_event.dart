@@ -10,7 +10,7 @@ class PostGetSubmittedEvent extends PostGetEvent{
   final int pageSize;
   final int page;
 
-  PostGetSubmittedEvent({required this.loginToken, required this.radius, required this.latitude, required this.longitude, required this.pageSize, required this.page});
+  PostGetSubmittedEvent({required this.loginToken, required this.radius, required this.pageSize, required this.page, required this.longitude, required this.latitude});
 
 }
 
