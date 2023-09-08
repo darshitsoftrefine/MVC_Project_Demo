@@ -6,23 +6,23 @@ class PostGetModel {
 
   PostGetModel.fromJson(Map<String, dynamic> json) {
     pagination = json['pagination'] != null
-        ? new Pagination.fromJson(json['pagination'])
+        ? Pagination.fromJson(json['pagination'])
         : null;
     if (json['posts'] != null) {
       posts = <Posts>[];
       json['posts'].forEach((v) {
-        posts!.add(new Posts.fromJson(v));
+        posts!.add(Posts.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.pagination != null) {
-      data['pagination'] = this.pagination!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (pagination != null) {
+      data['pagination'] = pagination!.toJson();
     }
-    if (this.posts != null) {
-      data['posts'] = this.posts!.map((v) => v.toJson()).toList();
+    if (posts != null) {
+      data['posts'] = posts!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -44,11 +44,11 @@ class Pagination {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['pageSize'] = this.pageSize;
-    data['nextPage'] = this.nextPage;
-    data['length'] = this.length;
-    data['totalCount'] = this.totalCount;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['pageSize'] = pageSize;
+    data['nextPage'] = nextPage;
+    data['length'] = length;
+    data['totalCount'] = totalCount;
     return data;
   }
 }
@@ -65,13 +65,13 @@ class Posts {
   String? postDescription;
   String? postHashTags;
   List<PostMedia>? postMedia;
-  List<Null>? postComments;
+  List<void>? postComments;
   List<PostLikes>? postLikes;
-  List<Null>? postBookmarks;
+  List<void>? postBookmarks;
   PostedBy? postedBy;
   ShareDetails? shareDetails;
   bool? isReported;
-  List<Null>? reportId;
+  List<void>? reportId;
   String? fontColor;
   String? backgroundColor;
   String? type;
@@ -121,26 +121,26 @@ class Posts {
     isLikedByMe = json['isLikedByMe'];
     isSharedPost = json['isSharedPost'];
     address = json['address'];
-    loc = json['loc'] != null ? new Loc.fromJson(json['loc']) : null;
+    loc = json['loc'] != null ? Loc.fromJson(json['loc']) : null;
     postDescription = json['postDescription'];
     postHashTags = json['postHashTags'];
     if (json['postMedia'] != null) {
       postMedia = <PostMedia>[];
       json['postMedia'].forEach((v) {
-        postMedia!.add(new PostMedia.fromJson(v));
+        postMedia!.add(PostMedia.fromJson(v));
       });
     }
     if (json['postLikes'] != null) {
       postLikes = <PostLikes>[];
       json['postLikes'].forEach((v) {
-        postLikes!.add(new PostLikes.fromJson(v));
+        postLikes!.add(PostLikes.fromJson(v));
       });
     }
     postedBy = json['postedBy'] != null
-        ? new PostedBy.fromJson(json['postedBy'])
+        ? PostedBy.fromJson(json['postedBy'])
         : null;
     shareDetails = json['shareDetails'] != null
-        ? new ShareDetails.fromJson(json['shareDetails'])
+        ? ShareDetails.fromJson(json['shareDetails'])
         : null;
     isReported = json['isReported'];
     fontColor = json['fontColor'];
@@ -156,43 +156,43 @@ class Posts {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = this.sId;
-    data['createdAt'] = this.createdAt;
-    data['isAdvertorialPost'] = this.isAdvertorialPost;
-    data['isBookmarkedByMe'] = this.isBookmarkedByMe;
-    data['isLikedByMe'] = this.isLikedByMe;
-    data['isSharedPost'] = this.isSharedPost;
-    data['address'] = this.address;
-    if (this.loc != null) {
-      data['loc'] = this.loc!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['_id'] = sId;
+    data['createdAt'] = createdAt;
+    data['isAdvertorialPost'] = isAdvertorialPost;
+    data['isBookmarkedByMe'] = isBookmarkedByMe;
+    data['isLikedByMe'] = isLikedByMe;
+    data['isSharedPost'] = isSharedPost;
+    data['address'] = address;
+    if (loc != null) {
+      data['loc'] = loc!.toJson();
     }
-    data['postDescription'] = this.postDescription;
-    data['postHashTags'] = this.postHashTags;
-    if (this.postMedia != null) {
-      data['postMedia'] = this.postMedia!.map((v) => v.toJson()).toList();
+    data['postDescription'] = postDescription;
+    data['postHashTags'] = postHashTags;
+    if (postMedia != null) {
+      data['postMedia'] = postMedia!.map((v) => v.toJson()).toList();
     }
-    if (this.postLikes != null) {
-      data['postLikes'] = this.postLikes!.map((v) => v.toJson()).toList();
+    if (postLikes != null) {
+      data['postLikes'] = postLikes!.map((v) => v.toJson()).toList();
     }
-    if (this.postedBy != null) {
-      data['postedBy'] = this.postedBy!.toJson();
+    if (postedBy != null) {
+      data['postedBy'] = postedBy!.toJson();
     }
-    if (this.shareDetails != null) {
-      data['shareDetails'] = this.shareDetails!.toJson();
+    if (shareDetails != null) {
+      data['shareDetails'] = shareDetails!.toJson();
     }
-    data['isReported'] = this.isReported;
+    data['isReported'] = isReported;
 
-    data['fontColor'] = this.fontColor;
-    data['backgroundColor'] = this.backgroundColor;
-    data['type'] = this.type;
-    data['commentAllowed'] = this.commentAllowed;
-    data['partnerId'] = this.partnerId;
-    data['status'] = this.status;
-    data['postAuthor'] = this.postAuthor;
-    data['zipCode'] = this.zipCode;
-    data['category'] = this.category;
-    data['dataPrivacyRule'] = this.dataPrivacyRule;
+    data['fontColor'] = fontColor;
+    data['backgroundColor'] = backgroundColor;
+    data['type'] = type;
+    data['commentAllowed'] = commentAllowed;
+    data['partnerId'] = partnerId;
+    data['status'] = status;
+    data['postAuthor'] = postAuthor;
+    data['zipCode'] = zipCode;
+    data['category'] = category;
+    data['dataPrivacyRule'] = dataPrivacyRule;
     return data;
   }
 }
@@ -209,9 +209,9 @@ class Loc {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['type'] = this.type;
-    data['coordinates'] = this.coordinates;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['type'] = type;
+    data['coordinates'] = coordinates;
     return data;
   }
 }
@@ -230,10 +230,10 @@ class PostMedia {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = this.sId;
-    data['mediaType'] = this.mediaType;
-    data['url'] = this.url;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['_id'] = sId;
+    data['mediaType'] = mediaType;
+    data['url'] = url;
     return data;
   }
 }
@@ -267,14 +267,14 @@ class PostLikes {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = this.sId;
-    data['firstName'] = this.firstName;
-    data['lastName'] = this.lastName;
-    data['profilePicUrl'] = this.profilePicUrl;
-    data['isDefaultImage'] = this.isDefaultImage;
-    data['defaultImagePath'] = this.defaultImagePath;
-    data['createdAt'] = this.createdAt;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['_id'] = sId;
+    data['firstName'] = firstName;
+    data['lastName'] = lastName;
+    data['profilePicUrl'] = profilePicUrl;
+    data['isDefaultImage'] = isDefaultImage;
+    data['defaultImagePath'] = defaultImagePath;
+    data['createdAt'] = createdAt;
     return data;
   }
 }
@@ -305,13 +305,13 @@ class PostedBy {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['firstName'] = this.firstName;
-    data['lastName'] = this.lastName;
-    data['profilePicUrl'] = this.profilePicUrl;
-    data['userId'] = this.userId;
-    data['isDefaultImage'] = this.isDefaultImage;
-    data['defaultImagePath'] = this.defaultImagePath;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['firstName'] = firstName;
+    data['lastName'] = lastName;
+    data['profilePicUrl'] = profilePicUrl;
+    data['userId'] = userId;
+    data['isDefaultImage'] = isDefaultImage;
+    data['defaultImagePath'] = defaultImagePath;
     return data;
   }
 }
@@ -327,16 +327,16 @@ class ShareDetails {
     originalPostId = json['originalPostId'];
     sharedOn = json['sharedOn'];
     sharedBy = json['sharedBy'] != null
-        ? new SharedBy.fromJson(json['sharedBy'])
+        ? SharedBy.fromJson(json['sharedBy'])
         : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['originalPostId'] = this.originalPostId;
-    data['sharedOn'] = this.sharedOn;
-    if (this.sharedBy != null) {
-      data['sharedBy'] = this.sharedBy!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['originalPostId'] = originalPostId;
+    data['sharedOn'] = sharedOn;
+    if (sharedBy != null) {
+      data['sharedBy'] = sharedBy!.toJson();
     }
     return data;
   }
@@ -356,10 +356,10 @@ class SharedBy {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['firstName'] = this.firstName;
-    data['lastName'] = this.lastName;
-    data['profilePicUrl'] = this.profilePicUrl;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['firstName'] = firstName;
+    data['lastName'] = lastName;
+    data['profilePicUrl'] = profilePicUrl;
     return data;
   }
 }
