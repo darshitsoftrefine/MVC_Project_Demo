@@ -29,7 +29,6 @@ class PostGetFetch extends PostRepository {
     if(response.statusCode == 200){
 
       List<Posts>? postedDetails = PostGetModel.fromJson(data).posts;
-      //print(postedDetails);
       return postedDetails;
     } else {
       throw Exception('Failed');

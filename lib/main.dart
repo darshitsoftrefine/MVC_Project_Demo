@@ -12,7 +12,7 @@ void main(){
       BlocProvider(create: (context) => LoginBloc(repository: CoupinosLogin())),
       BlocProvider(create: (context) => PostGetBloc(repository: PostGetFetch())),
     ],
-         child: MyApp(),
+         child: const MyApp(),
             ),
        );
 }

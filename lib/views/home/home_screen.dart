@@ -1,4 +1,5 @@
 import 'package:coupinos_project/views/constants/image_constants.dart';
+import 'package:coupinos_project/views/constants/string_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geocoding/geocoding.dart';
@@ -18,8 +19,8 @@ class HomeScreen extends StatelessWidget {
   final int page = 0;
   final double latitude = 72.50369833333333;
   final double longitude = 23.034296666666666;
-  List<Posts> postDetails = [];
   final ValueNotifier<bool> hasData = ValueNotifier<bool>(false);
+  final ValueNotifier<List<Posts>> refresh = ValueNotifier<List<Posts>>([]);
   final ValueNotifier<String> local = ValueNotifier<String>("");
 
   @override
@@ -108,151 +109,168 @@ class HomeScreen extends StatelessWidget {
                 if (state is PostGetSuccessState) {
                   debugPrint("Success");
                   hasData.value = true;
-                  postDetails = state.postDetails;
+                  refresh.value = state.postDetails;
                 }
                 else if (state is PostGetLoadingState) {
                   debugPrint("Loading");
+
                 } else if (state is PostGetFailureState) {
                   debugPrint("Fail");
                   ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Failed")));
                 } else {
+                  debugPrint("Loading");
                   const Center(child: CircularProgressIndicator(),);
                 }
               },
               child: ValueListenableBuilder(
                 valueListenable: hasData,
                 builder: (BuildContext context, value, Widget? child) {
-                  return value ? ListView.builder(
-                      itemCount: postDetails.length,
-                      itemBuilder: (context, index) {
-                        String baseUrl = 'https://coupinos-app.azurewebsites.net';
-                        int c = -1;
-                        ++c;
-                        List<double>? lat = postDetails[index].loc?.coordinates;
-                        double latitude = lat![0];
-                        double longitude = lat[1];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 10.0),
-                          child: Card(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)
-                            ),
-                            clipBehavior: Clip.antiAlias,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 14.0, top: 10),
+                  return value ? RefreshIndicator(
+                    onRefresh: () async{
+                      fetchData(context);
+                    },
+                    child: ValueListenableBuilder(
+                      valueListenable: refresh,
+                      builder: (BuildContext context, List<Posts> value, Widget? child) {
+                        return ListView.builder(
+                            itemCount: value.length,
+                            itemBuilder: (context, index) {
+                              String baseUrl = ConstantStrings.baseUrl;
+                              int c = -1;
+                              ++c;
+                              List<double>? lat = value[index].loc?.coordinates;
+                              double latitude = lat![0];
+                              double longitude = lat[1];
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 10.0),
+                                child: Card(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10)
+                                  ),
+                                  clipBehavior: Clip.antiAlias,
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment
-                                        .start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [Row(
-                                            children: [
-                                              CircleAvatar(
-                                                radius: 15,
-                                                backgroundImage: NetworkImage(
-                                                  '$baseUrl${postDetails[index].postedBy?.defaultImagePath}',
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8,),
-                                              Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 14.0, top: 10),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment
+                                              .start,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [Row(
                                                 children: [
-                                                  Text("${postDetails[index].postedBy?.firstName} ${postDetails[index].postedBy?.lastName}",
-                                                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                                  CircleAvatar(
+                                                    radius: 15,
+                                                    backgroundImage: NetworkImage(
+                                                      '$baseUrl${value[index].postedBy?.defaultImagePath}',
+                                                    ),
                                                   ),
-                                                  const SizedBox(height: 2,),
-                                                  ValueListenableBuilder(valueListenable: local,
-                                                    builder: (BuildContext context, String value, Widget? child) {
-                                                    getAddressFromLatLng(latitude, longitude);
-                                                    return Text(value, style: const TextStyle(fontSize: 10),);
-                                                    },
-                                                  )
-
+                                                  const SizedBox(width: 8,),
+                                                  Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text("${value[index].postedBy?.firstName} ${value[index].postedBy?.lastName}",
+                                                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                                      ),
+                                                      const SizedBox(height: 2,),
+                                                      FutureBuilder<String?>(
+                                                        future: getAddressFromLatLng(latitude, longitude), // pass the future function here
+                                                        builder: (context, snapshot) {
+                                                          if (snapshot.hasData) {
+                                                            return Text(snapshot.data!, style: const TextStyle(fontSize: 10),);
+                                                          } else if (snapshot.hasError) {
+                                                            return Text(snapshot.error.toString());
+                                                          } else {
+                                                            return const CircularProgressIndicator();
+                                                          }
+                                                        },
+                                                      )
+                                                    ],
+                                                  ),
                                                 ],
                                               ),
-                                            ],
-                                          ),
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.end,
-                                            children: [
-                                              Text("2h ago", style: TextStyle(fontSize: 12, color: Colors.grey.shade500),),
-                                              IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert, size: 24,))
-                                            ],
-                                          )
-
-                                        ],
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.end,
+                                                  children: [
+                                                    Text("2h ago", style: TextStyle(fontSize: 12, color: Colors.grey.shade500),),
+                                                    IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert, size: 24,))
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                            Container(
+                                                margin: const EdgeInsets.only(top: 9),
+                                                child: SingleChildScrollView(
+                                                  scrollDirection: Axis.horizontal,
+                                                  child: Row(
+                                                    children: [
+                                                      Text('${value[index].postHashTags}', style: const TextStyle(color: Colors.blue, fontSize: 12),),
+                                                      const SizedBox(width: 8,),
+                                                      Text("${value[index].postDescription}", style: const TextStyle(color: Colors.blue, fontSize: 12)),
+                                                    ],
+                                                  ),
+                                                )
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                      Container(
-                                          margin: const EdgeInsets.only(top: 9),
-                                          child: Row(
-                                            children: const [
-                                              Text("#hashtag", style: TextStyle(color: Colors.blue, fontSize: 12),),
-                                              SizedBox(width: 8,),
-                                              Text("#newwxperience", style: TextStyle(color: Colors.blue, fontSize: 12)),
-                                              SizedBox(width: 8,),
-                                              Text("#newlocation", style: TextStyle(color: Colors.blue, fontSize: 12))
-                                            ],
-                                          )
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          value[index].postMedia!.isEmpty ? const SizedBox() :
+                                          Container(
+                                              margin: const EdgeInsets.only(top: 9),
+                                              child: ClipRRect(
+                                                clipBehavior: Clip.antiAlias,
+                                                borderRadius: BorderRadius.circular(
+                                                    1),
+                                                child: AspectRatio(
+                                                  aspectRatio: 16 / 9,
+                                                  child: Image.network('$baseUrl${value[index].postMedia?[c].url}',
+                                                    fit: BoxFit.cover,),
+                                                ),
+                                              )),
+                                          Container(
+                                            margin: const EdgeInsets.only(top: 9, left: 10, right: 10),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    IconButton(onPressed: () {
+
+                                                    },
+                                                        icon: const Icon(Icons.favorite, color: Colors.red, size: 25,)),
+                                                    Text('${value[index].postLikes?.length}'),
+                                                    IconButton(onPressed: () {}, icon: const Icon(Icons.messenger_outline, color: Colors.grey,)),
+                                                    value[index].postBookmarks?.length == null ? const Text("0") :Text('${value[index].postBookmarks?.length}'),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    IconButton(onPressed: () {},
+                                                        icon: const Icon(Icons.bookmark_border, color: Colors.grey,)),
+                                                    IconButton(onPressed: () {},
+                                                        icon: const Icon(Icons.file_upload_outlined, color: Colors.grey,)),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
                                 ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    postDetails[index].postMedia!.isEmpty ? const SizedBox() :
-                                    Container(
-                                        margin: const EdgeInsets.only(top: 9),
-                                        child: ClipRRect(
-                                          clipBehavior: Clip.antiAlias,
-                                          borderRadius: BorderRadius.circular(
-                                              1),
-                                          child: AspectRatio(
-                                            aspectRatio: 16 / 9,
-                                            child: Image.network('$baseUrl${postDetails[index].postMedia?[c].url}',
-                                              fit: BoxFit.cover,),
-                                          ),
-                                        )),
-                                    Container(
-                                      margin: const EdgeInsets.only(top: 9, left: 10, right: 10),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              IconButton(onPressed: () {},
-                                                  icon: const Icon(Icons.favorite, color: Colors.red, size: 25,)),
-                                              const Text("22"),
-                                              IconButton(onPressed: () {}, icon: const Icon(Icons.messenger_outline, color: Colors.grey,)),
-                                              const Text("3"),
-                                            ],
-                                          ),
-                                          //SizedBox(width: 126,),
-                                          Row(
-                                            children: [
-                                              IconButton(onPressed: () {},
-                                                  icon: const Icon(Icons.bookmark_border, color: Colors.grey,)),
-                                              IconButton(onPressed: () {},
-                                                  icon: const Icon(Icons.file_upload_outlined, color: Colors.grey,)),
-                                            ],
-                                          )
-
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }) : const Center(child: CircularProgressIndicator(),);
+                              );
+                            });
+                      },
+                    ),
+                  ) : const Center(child: CircularProgressIndicator(),);
                 },
               ),
             ),
@@ -269,8 +287,8 @@ class HomeScreen extends StatelessWidget {
           longitude, latitude);
       if (placemarks.isNotEmpty) {
         final Placemark place = placemarks[0];
-        local.value = place.country!;
-        return place.country;
+        local.value = '${place.street} ${place.locality} ${place.postalCode} ${place.country}';
+        return '${place.street} ${place.locality} ${place.postalCode} ${place.country}';   //concat  locality postalcode  country
       } else {
         return 'Location not found';
       }
@@ -278,5 +296,16 @@ class HomeScreen extends StatelessWidget {
       debugPrint('Error: $e');
       return null;
     }
+  }
+
+  void fetchData(BuildContext context) async {
+    hasData.value = false;
+    await Future.delayed(const Duration(seconds: 3));
+    if(context.mounted) {
+      BlocProvider.of<PostGetBloc>(context).add(PostGetSubmittingEvent());
+      BlocProvider.of<PostGetBloc>(context).add(PostGetSubmittedEvent(loginToken: loginToken, radius: radius, pageSize: pageSize, page: page, longitude: longitude, latitude: latitude));
+    }
+    hasData.value = true;
+
   }
 }
