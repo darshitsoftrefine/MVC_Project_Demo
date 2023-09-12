@@ -142,6 +142,11 @@ class HomeScreen extends StatelessWidget {
                               List<double>? lat = value[index].loc?.coordinates;
                               double latitude = lat![0];
                               double longitude = lat[1];
+                              var created = DateTime.parse('${value[index].createdAt}');
+                              Duration diff = DateTime.now().difference(created);
+                              int diffyears1 = diff.inDays ~/ 365;
+                              int diffmonths1 = diff.inDays ~/ 30;
+                              int diffweeks1 = diff.inDays ~/ 7;
                               return Padding(
                                 padding: const EdgeInsets.only(bottom: 10.0),
                                 child: Card(
@@ -156,12 +161,12 @@ class HomeScreen extends StatelessWidget {
                                         padding: const EdgeInsets.only(
                                             left: 14.0, top: 10),
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment
-                                              .start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [Row(
+                                              children: [
+                                                Row(
                                                 children: [
                                                   CircleAvatar(
                                                     radius: 15,
@@ -178,7 +183,7 @@ class HomeScreen extends StatelessWidget {
                                                       ),
                                                       const SizedBox(height: 2,),
                                                       FutureBuilder<String?>(
-                                                        future: getAddressFromLatLng(latitude, longitude), // pass the future function here
+                                                        future: getAddressFromLatLng(latitude, longitude),
                                                         builder: (context, snapshot) {
                                                           if (snapshot.hasData) {
                                                             return Text(snapshot.data!, style: const TextStyle(fontSize: 10),);
@@ -194,9 +199,10 @@ class HomeScreen extends StatelessWidget {
                                                 ],
                                               ),
                                                 Row(
-                                                  mainAxisAlignment: MainAxisAlignment.end,
                                                   children: [
-                                                    Text("2h ago", style: TextStyle(fontSize: 12, color: Colors.grey.shade500),),
+                                                    diffyears1 > 0 ? Text("$diffyears1 years ago", style: const TextStyle(fontSize: 12, color: Colors.grey),):
+                                                    diffmonths1 == 0 ?
+                                                    Text('$diffweeks1 weeks ago', style: TextStyle(fontSize: 12, color: Colors.grey.shade500),):  Text('$diffmonths1 months ago', style: TextStyle(fontSize: 12, color: Colors.grey.shade500),),
                                                     IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert, size: 24,))
                                                   ],
                                                 )
@@ -287,8 +293,8 @@ class HomeScreen extends StatelessWidget {
           longitude, latitude);
       if (placemarks.isNotEmpty) {
         final Placemark place = placemarks[0];
-        local.value = '${place.street} ${place.locality} ${place.postalCode} ${place.country}';
-        return '${place.street} ${place.locality} ${place.postalCode} ${place.country}';   //concat  locality postalcode  country
+        local.value = '${place.street} ${place.locality} ${place.postalCode}  ${place.country}';
+        return '${place.street}\n${place.locality} ${place.postalCode}  ${place.country}';   //concat  locality postalcode  country
       } else {
         return 'Location not found';
       }
