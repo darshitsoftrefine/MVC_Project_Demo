@@ -15,4 +15,7 @@ class ConstantStrings {
   static const buttonText = 'Weiter';
 
   static const bottomText = 'Ich habe mein Passwort vergessen';
+
+  static const commentHeadingText = "Kommentare";
+  static const hintTextInDetails = 'Schreiben Sie einen Kommentar...';
 }

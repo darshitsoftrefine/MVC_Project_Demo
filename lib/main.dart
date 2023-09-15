@@ -1,4 +1,5 @@
 import 'package:coupinos_project/model/login_data/login_repository.dart';
+import 'package:coupinos_project/model/post_get_data/post_details_repository.dart';
 import 'package:coupinos_project/model/post_get_data/post_get_repository.dart';
 import 'package:coupinos_project/views/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ void main(){
     providers: [
       BlocProvider(create: (context) => LoginBloc(repository: CoupinosLogin())),
       BlocProvider(create: (context) => PostGetBloc(repository: PostGetFetch())),
+      BlocProvider(create: (context) => PostDetailsBloc(repository: PostGetDetailsFetch())),
     ],
          child: const MyApp(),
             ),

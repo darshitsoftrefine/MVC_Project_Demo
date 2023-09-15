@@ -1,14 +1,16 @@
 import 'package:coupinos_project/views/constants/image_constants.dart';
 import 'package:coupinos_project/views/constants/string_constants.dart';
+import 'package:coupinos_project/views/details/post_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geocoding/geocoding.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../controller/post_get_bloc/post_get_bloc.dart';
 import '../../controller/post_get_bloc/post_get_event.dart';
 import '../../controller/post_get_bloc/post_get_state.dart';
 import '../../model/post_get_data/post_get_model.dart';
 import '../../model/post_get_data/post_get_repository.dart';
 import '../themes/custom_themes.dart';
+import '../utils/get_location.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -19,6 +21,7 @@ class HomeScreen extends StatelessWidget {
   final int page = 0;
   final double latitude = 72.50369833333333;
   final double longitude = 23.034296666666666;
+  final String baseUrl = ConstantStrings.baseUrl;
   final ValueNotifier<bool> hasData = ValueNotifier<bool>(false);
   final ValueNotifier<List<Posts>> refresh = ValueNotifier<List<Posts>>([]);
   final ValueNotifier<String> local = ValueNotifier<String>("");
@@ -29,6 +32,7 @@ class HomeScreen extends StatelessWidget {
       child: BlocProvider(create: (context) => PostGetBloc(repository: PostGetFetch())..add(PostGetSubmittedEvent(loginToken: loginToken, radius: radius, pageSize: pageSize, page: page, longitude: longitude, latitude: latitude)),
         child: Scaffold(
           backgroundColor: Colors.grey.shade200,
+          //App Bar
           appBar: AppBar(
             backgroundColor: Colors.white,
             elevation: 0.0,
@@ -102,53 +106,53 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: BlocListener<PostGetBloc, PostGetState>(
-              listener: (context, state) {
-                if (state is PostGetSuccessState) {
-                  debugPrint("Success");
-                  hasData.value = true;
-                  refresh.value = state.postDetails;
-                }
-                else if (state is PostGetLoadingState) {
-                  debugPrint("Loading");
+          body: BlocListener<PostGetBloc, PostGetState>(
+            listener: (context, state) {
+              if (state is PostGetSuccessState) {
+                debugPrint("Success");
+                hasData.value = true;
+                refresh.value = state.postDetails;
+              }
+              else if (state is PostGetLoadingState) {
+                debugPrint("Loading");
 
-                } else if (state is PostGetFailureState) {
-                  debugPrint("Fail");
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Failed")));
-                } else {
-                  debugPrint("Loading");
-                  const Center(child: CircularProgressIndicator(),);
-                }
-              },
-              child: ValueListenableBuilder(
-                valueListenable: hasData,
-                builder: (BuildContext context, value, Widget? child) {
-                  return value ? RefreshIndicator(
-                    onRefresh: () async{
-                      fetchData(context);
-                    },
-                    child: ValueListenableBuilder(
-                      valueListenable: refresh,
-                      builder: (BuildContext context, List<Posts> value, Widget? child) {
-                        return ListView.builder(
-                            itemCount: value.length,
-                            itemBuilder: (context, index) {
-                              String baseUrl = ConstantStrings.baseUrl;
-                              int c = -1;
-                              ++c;
-                              List<double>? lat = value[index].loc?.coordinates;
-                              double latitude = lat![0];
-                              double longitude = lat[1];
-                              var created = DateTime.parse('${value[index].createdAt}');
-                              Duration diff = DateTime.now().difference(created);
-                              int diffyears1 = diff.inDays ~/ 365;
-                              int diffmonths1 = diff.inDays ~/ 30;
-                              int diffweeks1 = diff.inDays ~/ 7;
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 10.0),
+              } else if (state is PostGetFailureState) {
+                debugPrint("Fail");
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Failed")));
+              } else {
+                debugPrint("Loading");
+                const Center(child: CircularProgressIndicator(),);
+              }
+            },
+            child: ValueListenableBuilder(
+              valueListenable: hasData,
+              builder: (BuildContext context, value, Widget? child) {
+                return value ? RefreshIndicator(
+                  onRefresh: () async{
+                    fetchData(context);
+                  },
+                  child: ValueListenableBuilder(
+                    valueListenable: refresh,
+                    builder: (BuildContext context, List<Posts> value, Widget? child) {
+                      // Display of the List
+                      return ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                          itemCount: value.length,
+                          itemBuilder: (context, index) {
+                            int c = -1;
+                            ++c;
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: GestureDetector(
+                                onTap: ()async{
+                                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                                  prefs.setString('id', '${value[index].sId}');
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => PostDetailsScreen()),
+                                  );
+                                },
                                 child: Card(
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10)
@@ -183,7 +187,7 @@ class HomeScreen extends StatelessWidget {
                                                       ),
                                                       const SizedBox(height: 2,),
                                                       FutureBuilder<String?>(
-                                                        future: getAddressFromLatLng(latitude, longitude),
+                                                        future: GetLocation().getAddressFromLatLng(latitude, longitude),
                                                         builder: (context, snapshot) {
                                                           if (snapshot.hasData) {
                                                             return Text(snapshot.data!, style: const TextStyle(fontSize: 10),);
@@ -200,9 +204,7 @@ class HomeScreen extends StatelessWidget {
                                               ),
                                                 Row(
                                                   children: [
-                                                    diffyears1 > 0 ? Text("$diffyears1 years ago", style: const TextStyle(fontSize: 12, color: Colors.grey),):
-                                                    diffmonths1 == 0 ?
-                                                    Text('$diffweeks1 weeks ago', style: TextStyle(fontSize: 12, color: Colors.grey.shade500),):  Text('$diffmonths1 months ago', style: TextStyle(fontSize: 12, color: Colors.grey.shade500),),
+                                                    Text(calculateTime('${value[index].createdAt}'), style: const TextStyle(fontSize: 10, color: Colors.grey),),
                                                     IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert, size: 24,))
                                                   ],
                                                 )
@@ -224,7 +226,6 @@ class HomeScreen extends StatelessWidget {
                                           ],
                                         ),
                                       ),
-
                                       Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
@@ -251,7 +252,7 @@ class HomeScreen extends StatelessWidget {
                                                     IconButton(onPressed: () {
 
                                                     },
-                                                        icon: const Icon(Icons.favorite, color: Colors.red, size: 25,)),
+                                                        icon: value[index].postLikes?.length == 0 ?  const Icon(Icons.favorite_border_outlined, color: Colors.grey ,  size: 25,):  const Icon(Icons.favorite, color: Colors.red, size: 25,)),
                                                     Text('${value[index].postLikes?.length}'),
                                                     IconButton(onPressed: () {}, icon: const Icon(Icons.messenger_outline, color: Colors.grey,)),
                                                     value[index].postBookmarks?.length == null ? const Text("0") :Text('${value[index].postBookmarks?.length}'),
@@ -273,13 +274,13 @@ class HomeScreen extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                              );
-                            });
-                      },
-                    ),
-                  ) : const Center(child: CircularProgressIndicator(),);
-                },
-              ),
+                              ),
+                            );
+                          });
+                    },
+                  ),
+                ) : const Center(child: CircularProgressIndicator(),);
+              },
             ),
           ),
         ),
@@ -287,23 +288,24 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Future<String?> getAddressFromLatLng(double latitude,
-      double longitude) async {
-    try {
-      final List<Placemark> placemarks = await placemarkFromCoordinates(
-          longitude, latitude);
-      if (placemarks.isNotEmpty) {
-        final Placemark place = placemarks[0];
-        local.value = '${place.street} ${place.locality} ${place.postalCode}  ${place.country}';
-        return '${place.street}\n${place.locality} ${place.postalCode}  ${place.country}';   //concat  locality postalcode  country
-      } else {
-        return 'Location not found';
-      }
-    } catch (e) {
-      debugPrint('Error: $e');
-      return null;
+  String calculateTime(String creation){
+    Duration diff = DateTime.now().difference(DateTime.parse(creation));
+    int diffyears1 = diff.inDays ~/ 365;
+    int diffmonths1 = diff.inDays ~/ 30;
+    int diffweeks1 = diff.inDays ~/ 7;
+    int diffhours1 = diff.inDays ~/ 24;
+    if(diffyears1 > 0){
+      return '$diffyears1 years ago';
+    } else if(diffmonths1 > 0){
+      return '$diffmonths1 months ago';
+    } else if(diffweeks1 > 0) {
+      return '$diffweeks1 weeks ago';
+    }else if(diffhours1 > 0){
+      return '$diffhours1 hours ago';
+    }else {
+        return 'Just now';
     }
-  }
+    }
 
   void fetchData(BuildContext context) async {
     hasData.value = false;
