@@ -1,5 +1,3 @@
-import 'package:coupinos_project/model/post_get_data/post_get_model.dart';
-
 class PostDetailsModel {
   String? status;
   String? message;
@@ -152,8 +150,8 @@ class Data {
     }
     data['postDescription'] = postDescription;
     data['postHashTags'] = postHashTags;
-    if (this.postMedia != null) {
-      data['postMedia'] = this.postMedia!.map((v) => v.toJson()).toList();
+    if (postMedia != null) {
+      data['postMedia'] = postMedia!.map((v) => v.toJson()).toList();
     }
     if (postComments != null) {
       data['postComments'] = postComments!.map((v) => v.toJson()).toList();

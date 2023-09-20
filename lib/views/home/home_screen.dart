@@ -11,6 +11,7 @@ import '../../model/post_get_data/post_get_model.dart';
 import '../../model/post_get_data/post_get_repository.dart';
 import '../themes/custom_themes.dart';
 import '../utils/get_location.dart';
+import '../utils/get_time.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -137,21 +138,19 @@ class HomeScreen extends StatelessWidget {
                     builder: (BuildContext context, List<Posts> value, Widget? child) {
                       // Display of the List
                       return ListView.builder(
-                        physics: const BouncingScrollPhysics(),
+                        physics: const AlwaysScrollableScrollPhysics(),
                           itemCount: value.length,
                           itemBuilder: (context, index) {
-                            int c = -1;
-                            ++c;
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: GestureDetector(
                                 onTap: ()async{
                                   SharedPreferences prefs = await SharedPreferences.getInstance();
                                   prefs.setString('id', '${value[index].sId}');
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => PostDetailsScreen()),
-                                  );
+                                  if(context.mounted) {
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => PostDetailsScreen()),
+                                    );
+                                  }
                                 },
                                 child: Card(
                                   shape: RoundedRectangleBorder(
@@ -204,7 +203,7 @@ class HomeScreen extends StatelessWidget {
                                               ),
                                                 Row(
                                                   children: [
-                                                    Text(calculateTime('${value[index].createdAt}'), style: const TextStyle(fontSize: 10, color: Colors.grey),),
+                                                    Text(GetTime().calculateTime('${value[index].createdAt}'), style: const TextStyle(fontSize: 10, color: Colors.grey),),
                                                     IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert, size: 24,))
                                                   ],
                                                 )
@@ -238,7 +237,7 @@ class HomeScreen extends StatelessWidget {
                                                     1),
                                                 child: AspectRatio(
                                                   aspectRatio: 16 / 9,
-                                                  child: Image.network('$baseUrl${value[index].postMedia?[c].url}',
+                                                  child: Image.network('$baseUrl${value[index].postMedia?[0].url}',
                                                     fit: BoxFit.cover,),
                                                 ),
                                               )),
@@ -252,7 +251,7 @@ class HomeScreen extends StatelessWidget {
                                                     IconButton(onPressed: () {
 
                                                     },
-                                                        icon: value[index].postLikes?.length == 0 ?  const Icon(Icons.favorite_border_outlined, color: Colors.grey ,  size: 25,):  const Icon(Icons.favorite, color: Colors.red, size: 25,)),
+                                                        icon: value[index].postLikes!.isEmpty ?  const Icon(Icons.favorite_border_outlined, color: Colors.grey ,  size: 25,):  const Icon(Icons.favorite, color: Colors.red, size: 25,)),
                                                     Text('${value[index].postLikes?.length}'),
                                                     IconButton(onPressed: () {}, icon: const Icon(Icons.messenger_outline, color: Colors.grey,)),
                                                     value[index].postBookmarks?.length == null ? const Text("0") :Text('${value[index].postBookmarks?.length}'),
@@ -288,24 +287,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  String calculateTime(String creation){
-    Duration diff = DateTime.now().difference(DateTime.parse(creation));
-    int diffyears1 = diff.inDays ~/ 365;
-    int diffmonths1 = diff.inDays ~/ 30;
-    int diffweeks1 = diff.inDays ~/ 7;
-    int diffhours1 = diff.inDays ~/ 24;
-    if(diffyears1 > 0){
-      return '$diffyears1 years ago';
-    } else if(diffmonths1 > 0){
-      return '$diffmonths1 months ago';
-    } else if(diffweeks1 > 0) {
-      return '$diffweeks1 weeks ago';
-    }else if(diffhours1 > 0){
-      return '$diffhours1 hours ago';
-    }else {
-        return 'Just now';
-    }
-    }
+
 
   void fetchData(BuildContext context) async {
     hasData.value = false;
@@ -315,6 +297,10 @@ class HomeScreen extends StatelessWidget {
       BlocProvider.of<PostGetBloc>(context).add(PostGetSubmittedEvent(loginToken: loginToken, radius: radius, pageSize: pageSize, page: page, longitude: longitude, latitude: latitude));
     }
     hasData.value = true;
+
+  }
+
+  void temporaryList(){
 
   }
 }
