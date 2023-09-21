@@ -13,7 +13,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  String loginToken = "";
+  String? loginToken = "";
   @override
   void initState() {
     getToken().then((value) {
@@ -24,17 +24,17 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Timer(
         const Duration(seconds: 2),
-            () => loginToken.isEmpty ? Navigator.pushReplacement(context,
+            () => loginToken?.isEmpty == null ? Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => const LoginScreen())): Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (context) => HomeScreen())));
   }
 
 
-  Future<String> getToken() async {
+  Future<String?> getToken() async {
     final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String? obtainedToken = sharedPreferences.getString('loginToken');
     debugPrint("Token $obtainedToken");
-    return obtainedToken!;
+    return obtainedToken;
   }
 
 
@@ -43,7 +43,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          Image.asset(ConstantImages.splashBackgroundImage, fit: BoxFit.fill, height: double.infinity,),
+          Image.asset(ConstantImages.splashBackgroundImage, fit: BoxFit.fill, height: double.infinity, width: double.infinity,),
           Center(child: Image.asset(ConstantImages.splashTextImage, width: 228, height: 48.23, fit: BoxFit.fill,)),
         ],
       ),

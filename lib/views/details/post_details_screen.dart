@@ -19,7 +19,7 @@ class PostDetailsScreen extends StatelessWidget {
   final ValueNotifier<bool> hasData = ValueNotifier<bool>(false);
   final double latitude = 72.50369833333333;
   final double longitude = 23.034296666666666;
-  final ValueNotifier<Data?> refresh = ValueNotifier<Data?> (null);
+  final ValueNotifier<Data?> refresh = ValueNotifier<Data?>(null);
   final commentController = TextEditingController();
 
 
@@ -62,201 +62,194 @@ class PostDetailsScreen extends StatelessWidget {
           child: ValueListenableBuilder(
             valueListenable: hasData,
             builder: (BuildContext context, value, Widget? child) {
-              return value ? RefreshIndicator(
-                onRefresh: () async{
-                  fetchData(context);
-                },
-                child: ValueListenableBuilder(
-                  valueListenable: refresh,
-                  builder: (BuildContext context, Data? value, Widget? child) {
-                    int c = -1;
-                    ++c;
-                          return Padding(
-                            padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10),
-                            child: CustomScrollView(
-                              physics: const BouncingScrollPhysics(),
-                              shrinkWrap: true,
-                              slivers: [
-                                SliverFillRemaining(
-                                  fillOverscroll: true,
-                                  hasScrollBody: false,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 14.0, top: 10),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    CircleAvatar(
-                                                      radius: 15,
-                                                      backgroundImage: NetworkImage(
-                                                        '$baseUrl${value?.postedBy?.defaultImagePath}',
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 8,),
-                                                    Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text("${value?.postedBy?.firstName} ${value?.postedBy?.lastName}",
-                                                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                                                        ),
-                                                        const SizedBox(height: 2,),
-                                                        FutureBuilder<String?>(
-                                                          future: GetLocation().getAddressFromLatLng(latitude, longitude),
-                                                          builder: (context, snapshot) {
-                                                            if (snapshot.hasData) {
-                                                              return Text(snapshot.data!, style: const TextStyle(fontSize: 10),);
-                                                            } else if (snapshot.hasError) {
-                                                              return Text(snapshot.error.toString());
-                                                            } else {
-                                                              return const CircularProgressIndicator();
-                                                            }
-                                                          },
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                                Text(GetTime().calculateTime('${value?.createdAt}'), style: const TextStyle(fontSize: 10, color: Colors.grey),)
-                                              ],
-                                            ),
-                                            Container(
-                                                margin: const EdgeInsets.only(top: 9),
-                                                child: SingleChildScrollView(
-                                                  scrollDirection: Axis.horizontal,
-                                                  child: Row(
-                                                    children: [
-                                                      Text('${value?.postHashTags}', style: const TextStyle(color: Colors.blue, fontSize: 12),),
-                                                      const SizedBox(width: 8,),
-                                                      Text("${value?.postDescription}", style: const TextStyle(color: Colors.blue, fontSize: 12)),
-                                                    ],
-                                                  ),
-                                                )
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      value?.postMedia?.length == 0 ? const SizedBox() :
-                                      Container(
-                                          margin: const EdgeInsets.only(top: 9),
-                                          child: ClipRRect(
-                                            clipBehavior: Clip.antiAlias,
-                                            borderRadius: BorderRadius.circular(
-                                                1),
-                                            child: AspectRatio(
-                                              aspectRatio: 16 / 9,
-                                              child: Image.network('$baseUrl${value?.postMedia?[c].url}',
-                                                fit: BoxFit.cover,),
-                                            ),
-                                          )),
-                                      Column(
+              return value ? ValueListenableBuilder(
+                valueListenable: refresh,
+                builder: (BuildContext context, Data? value, Widget? child) {
+                  int c = -1;
+                  ++c;
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10),
+                          child: CustomScrollView(
+                            physics: const BouncingScrollPhysics(),
+                            shrinkWrap: true,
+                            slivers: [
+                              SliverFillRemaining(
+                                fillOverscroll: true,
+                                hasScrollBody: false,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 14.0, top: 10),
+                                      child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  CircleAvatar(
+                                                    radius: 15,
+                                                    backgroundImage: NetworkImage(
+                                                      '$baseUrl${value?.postedBy?.defaultImagePath}',
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 8,),
+                                                  Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text("${value?.postedBy?.firstName} ${value?.postedBy?.lastName}",
+                                                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                                      ),
+                                                      const SizedBox(height: 2,),
+                                                      FutureBuilder<String?>(
+                                                        future: GetLocation().getAddressFromLatLng(latitude, longitude),
+                                                        builder: (context, snapshot) {
+                                                          if (snapshot.hasData) {
+                                                            return Text(snapshot.data!, style: const TextStyle(fontSize: 10),);
+                                                          } else if (snapshot.hasError) {
+                                                            return Text(snapshot.error.toString());
+                                                          } else {
+                                                            return const CircularProgressIndicator();
+                                                          }
+                                                        },
+                                                      )
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                              Text(GetTime().calculateTime('${value?.createdAt}'), style: const TextStyle(fontSize: 10, color: Colors.grey),)
+                                            ],
+                                          ),
                                           Container(
-                                            margin: const EdgeInsets.only(top: 9),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                Row(
+                                              margin: const EdgeInsets.only(top: 9),
+                                              child: SingleChildScrollView(
+                                                scrollDirection: Axis.horizontal,
+                                                child: Row(
                                                   children: [
-                                                    IconButton(onPressed: () {
+                                                    Text('${value?.postHashTags}', style: const TextStyle(color: Colors.blue, fontSize: 12),),
+                                                    const SizedBox(width: 8,),
+                                                    Text("${value?.postDescription}", style: const TextStyle(color: Colors.blue, fontSize: 12)),
+                                                  ],
+                                                ),
+                                              )
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    value!.postMedia!.isEmpty ? const SizedBox() :
+                                    Container(
+                                        margin: const EdgeInsets.only(top: 9),
+                                        child: ClipRRect(
+                                          clipBehavior: Clip.antiAlias,
+                                          borderRadius: BorderRadius.circular(
+                                              1),
+                                          child: AspectRatio(
+                                            aspectRatio: 16 / 9,
+                                            child: Image.network('$baseUrl${value.postMedia?[c].url}',
+                                              fit: BoxFit.cover,),
+                                          ),
+                                        )),
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          margin: const EdgeInsets.only(top: 9),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  IconButton(onPressed: () {
 
-                                                    },
-                                                        icon: value?.postLikes?.length == 0 ? const Icon(Icons.favorite_outline, color: Colors.grey, size: 25,): const Icon(Icons.favorite, color: Colors.red, size: 25,)),
-                                                    value?.postLikes?.length == 0 ? const SizedBox():  Text('${value?.postLikes?[0].firstName}' '${value?.postLikes?[0].lastName}' , style: const TextStyle(fontSize: 12),),
-                                                  ],
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    IconButton(onPressed: () {},
-                                                        icon: const Icon(Icons.bookmark_border, color: Colors.grey,)),
-                                                    IconButton(onPressed: () {},
-                                                        icon: const Icon(Icons.file_upload_outlined, color: Colors.grey,)),
-                                                  ],
-                                                )
-                                              ],
+                                                  },
+                                                      icon: value.postLikes!.isEmpty ? const Icon(Icons.favorite_outline, color: Colors.grey, size: 25,): const Icon(Icons.favorite, color: Colors.red, size: 25,)),
+                                                  value.postLikes!.isEmpty ? const SizedBox():  Text('${value.postLikes?[0].firstName}' '${value.postLikes?[0].lastName}' , style: const TextStyle(fontSize: 12),),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  IconButton(onPressed: () {},
+                                                      icon: const Icon(Icons.bookmark_border, color: Colors.grey,)),
+                                                  IconButton(onPressed: () {},
+                                                      icon: const Icon(Icons.file_upload_outlined, color: Colors.grey,)),
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Text('${ConstantStrings.commentHeadingText}  (${value.postComments?.length})', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),),
+                                    const SizedBox(height: 10,),
+                                    value.postComments!.isEmpty ? Center(child: Image.asset(ConstantImages.noCommentImage, width: 180, height: 189,)) : Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            CircleAvatar(
+                                              radius: 16,
+                                              backgroundImage: value.postComments!.isEmpty? const NetworkImage(''): NetworkImage('$baseUrl''${value.postComments?[c].defaultImagePath}'),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                      Text('${ConstantStrings.commentHeadingText}  (${value?.postComments?.length})', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),),
-                                      const SizedBox(height: 10,),
-                                      value?.postComments?.length == 0 ? Center(child: Image.asset(ConstantImages.noCommentImage, width: 180, height: 189,)) : Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              CircleAvatar(
-                                                radius: 16,
-                                                backgroundImage: value?.postComments?.length == 0? const NetworkImage(''): NetworkImage('$baseUrl''${value?.postComments?[c].defaultImagePath}'),
-                                              ),
-                                              const SizedBox(width: 5,),
-                                              Text('${value?.postComments?[c].firstName}' '${value?.postComments?[c].lastName}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(GetTime().calculateTime('${value?.postComments?[c].createdAt}'), style: const TextStyle(fontSize: 10, color: Colors.grey),),
-                                              IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert, size: 24,))
-                                            ],
-                                          )
-                                        ],
-                                      ),
-                                      const SizedBox(height: 2,),
-                                      value?.postComments?.length == 0? const SizedBox(): Padding(padding: const EdgeInsets.only(left: 35.0), child: Text("${value?.postComments?[c].comment}"),
-                                      ),
-                                      const SizedBox(height: 20,),
-                                      //SizedBox(height: 90),
-                                      const Expanded(child: SizedBox()),
-                                      ValueListenableBuilder(
-                                        valueListenable: commentController,
-                                        builder: (BuildContext context, value, Widget? child) {
-                                          return Row(
-                                            children: [
-                                              Expanded(
-                                                child: TextFormField(
-                                                  controller: commentController,
-                                                  decoration: InputDecoration(
-                                                    focusedBorder: OutlineInputBorder(
-                                                        borderRadius: BorderRadius.circular(10),
-                                                        borderSide:  BorderSide(color: CustomColors.primaryColor)
-                                                    ),
-                                                    border: OutlineInputBorder(
+                                            const SizedBox(width: 5,),
+                                            Text('${value.postComments?[c].firstName}' '${value.postComments?[c].lastName}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(GetTime().calculateTime('${value.postComments?[c].createdAt}'), style: const TextStyle(fontSize: 10, color: Colors.grey),),
+                                            IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert, size: 24,))
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                    value.postComments!.isEmpty? const SizedBox(): Padding(padding: const EdgeInsets.only(left: 35.0), child: Text("${value.postComments?[c].comment}"),
+                                    ),
+                                    const SizedBox(height: 20,),
+                                    const Expanded(child: SizedBox()),
+                                    ValueListenableBuilder(
+                                      valueListenable: commentController,
+                                      builder: (BuildContext context, value, Widget? child) {
+                                        return Row(
+                                          children: [
+                                            Expanded(
+                                              child: TextFormField(
+                                                controller: commentController,
+                                                decoration: InputDecoration(
+                                                  focusedBorder: OutlineInputBorder(
                                                       borderRadius: BorderRadius.circular(10),
-                                                    ),
-                                                    hintText: ConstantStrings.hintTextInDetails,
+                                                      borderSide:  BorderSide(color: CustomColors.primaryColor)
                                                   ),
+                                                  border: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(10),
+                                                  ),
+                                                  hintText: ConstantStrings.hintTextInDetails,
                                                 ),
                                               ),
-                                              const SizedBox(width: 5,),
-                                              value.text.isEmpty ? const SizedBox() :
-                                              Container(
-                                                  height: 60,
-                                                  width: 60,
-                                                  decoration: BoxDecoration(
-                                                    color: CustomColors.primaryColor,
-                                                    borderRadius: BorderRadius.circular(12),
-                                                  ),
-                                                  child: IconButton(onPressed: (){}, icon: const Icon(Icons.send, color: Colors.white,)))
-                                            ],
-                                          );
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                          );
-                    },
-                ),
+                                            ),
+                                            const SizedBox(width: 5,),
+                                            value.text.isEmpty ? const SizedBox() :
+                                            Container(
+                                                height: 60,
+                                                width: 60,
+                                                decoration: BoxDecoration(
+                                                  color: CustomColors.primaryColor,
+                                                  borderRadius: BorderRadius.circular(12),
+                                                ),
+                                                child: IconButton(onPressed: (){}, icon: const Icon(Icons.send, color: Colors.white,)))
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        );
+                  },
               ) : const Center(child: CircularProgressIndicator(),);
             },
           ),

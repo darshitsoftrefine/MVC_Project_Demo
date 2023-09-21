@@ -9,6 +9,7 @@ import '../../model/post_get_data/post_details_model.dart';
 import '../../model/post_get_data/post_get_model.dart';
 import '../../model/post_get_data/post_get_repository.dart';
 
+//Home Screen Bloc
 class PostGetBloc extends Bloc<PostGetEvent, PostGetState> {
   PostRepository repository;
 
@@ -31,7 +32,7 @@ class PostGetBloc extends Bloc<PostGetEvent, PostGetState> {
 }
 
 
-//Details Bloc
+//Details Bloc  Post Details Screen Bloc
 class PostDetailsBloc extends Bloc<PostDetailsEvent, PostDetailsState> {
   PostDetailsRepository repository;
 

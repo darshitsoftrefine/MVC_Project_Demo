@@ -12,7 +12,6 @@ class PostGetDetailsFetch extends PostDetailsRepository {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String? obtainedToken = sharedPreferences.getString('loginToken');
     String? obtainedId = sharedPreferences.getString('id');
-    print(obtainedId);
     var response = await http.get(Uri.parse('https://coupinos-app.azurewebsites.net/post/get/$obtainedId'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',

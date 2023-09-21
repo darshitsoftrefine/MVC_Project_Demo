@@ -29,6 +29,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<Posts> tempList = [];
     return BlocProvider(create: (context) => PostGetBloc(repository: PostGetFetch())..add(PostGetSubmittingEvent()),
       child: BlocProvider(create: (context) => PostGetBloc(repository: PostGetFetch())..add(PostGetSubmittedEvent(loginToken: loginToken, radius: radius, pageSize: pageSize, page: page, longitude: longitude, latitude: latitude)),
         child: Scaffold(
@@ -113,6 +114,7 @@ class HomeScreen extends StatelessWidget {
                 debugPrint("Success");
                 hasData.value = true;
                 refresh.value = state.postDetails;
+                tempList = state.postDetails;
               }
               else if (state is PostGetLoadingState) {
                 debugPrint("Loading");
@@ -135,18 +137,21 @@ class HomeScreen extends StatelessWidget {
                   },
                   child: ValueListenableBuilder(
                     valueListenable: refresh,
-                    builder: (BuildContext context, List<Posts> value, Widget? child) {
+                    builder: (BuildContext context, value, Widget? child) {
+
                       // Display of the List
+
                       return ListView.builder(
                         physics: const AlwaysScrollableScrollPhysics(),
-                          itemCount: value.length,
+                          itemCount: tempList.length,
                           itemBuilder: (context, index) {
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: GestureDetector(
                                 onTap: ()async{
+                                  // Id store for details screen
                                   SharedPreferences prefs = await SharedPreferences.getInstance();
-                                  prefs.setString('id', '${value[index].sId}');
+                                  prefs.setString('id', '${tempList[index].sId}');
                                   if(context.mounted) {
                                     Navigator.push(context, MaterialPageRoute(builder: (context) => PostDetailsScreen()),
                                     );
@@ -174,14 +179,14 @@ class HomeScreen extends StatelessWidget {
                                                   CircleAvatar(
                                                     radius: 15,
                                                     backgroundImage: NetworkImage(
-                                                      '$baseUrl${value[index].postedBy?.defaultImagePath}',
+                                                      '$baseUrl${tempList[index].postedBy?.defaultImagePath}',
                                                     ),
                                                   ),
                                                   const SizedBox(width: 8,),
                                                   Column(
                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
-                                                      Text("${value[index].postedBy?.firstName} ${value[index].postedBy?.lastName}",
+                                                      Text("${tempList[index].postedBy?.firstName} ${tempList[index].postedBy?.lastName}",
                                                         style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                                                       ),
                                                       const SizedBox(height: 2,),
@@ -203,7 +208,7 @@ class HomeScreen extends StatelessWidget {
                                               ),
                                                 Row(
                                                   children: [
-                                                    Text(GetTime().calculateTime('${value[index].createdAt}'), style: const TextStyle(fontSize: 10, color: Colors.grey),),
+                                                    Text(GetTime().calculateTime('${tempList[index].createdAt}'), style: const TextStyle(fontSize: 10, color: Colors.grey),),
                                                     IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert, size: 24,))
                                                   ],
                                                 )
@@ -215,9 +220,9 @@ class HomeScreen extends StatelessWidget {
                                                   scrollDirection: Axis.horizontal,
                                                   child: Row(
                                                     children: [
-                                                      Text('${value[index].postHashTags}', style: const TextStyle(color: Colors.blue, fontSize: 12),),
+                                                      Text('${tempList[index].postHashTags}', style: const TextStyle(color: Colors.blue, fontSize: 12),),
                                                       const SizedBox(width: 8,),
-                                                      Text("${value[index].postDescription}", style: const TextStyle(color: Colors.blue, fontSize: 12)),
+                                                      Text("${tempList[index].postDescription}", style: const TextStyle(color: Colors.blue, fontSize: 12)),
                                                     ],
                                                   ),
                                                 )
@@ -228,7 +233,7 @@ class HomeScreen extends StatelessWidget {
                                       Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          value[index].postMedia!.isEmpty ? const SizedBox() :
+                                          tempList[index].postMedia!.isEmpty ? const SizedBox() :
                                           Container(
                                               margin: const EdgeInsets.only(top: 9),
                                               child: ClipRRect(
@@ -237,7 +242,7 @@ class HomeScreen extends StatelessWidget {
                                                     1),
                                                 child: AspectRatio(
                                                   aspectRatio: 16 / 9,
-                                                  child: Image.network('$baseUrl${value[index].postMedia?[0].url}',
+                                                  child: Image.network('$baseUrl${tempList[index].postMedia?[0].url}',
                                                     fit: BoxFit.cover,),
                                                 ),
                                               )),
@@ -251,10 +256,10 @@ class HomeScreen extends StatelessWidget {
                                                     IconButton(onPressed: () {
 
                                                     },
-                                                        icon: value[index].postLikes!.isEmpty ?  const Icon(Icons.favorite_border_outlined, color: Colors.grey ,  size: 25,):  const Icon(Icons.favorite, color: Colors.red, size: 25,)),
-                                                    Text('${value[index].postLikes?.length}'),
+                                                        icon: tempList[index].postLikes!.isEmpty ?  const Icon(Icons.favorite_border_outlined, color: Colors.grey ,  size: 25,):  const Icon(Icons.favorite, color: Colors.red, size: 25,)),
+                                                    Text('${tempList[index].postLikes?.length}'),
                                                     IconButton(onPressed: () {}, icon: const Icon(Icons.messenger_outline, color: Colors.grey,)),
-                                                    value[index].postBookmarks?.length == null ? const Text("0") :Text('${value[index].postBookmarks?.length}'),
+                                                    tempList[index].postBookmarks?.length == null ? const Text("0") :Text('${tempList[index].postBookmarks?.length}'),
                                                   ],
                                                 ),
                                                 Row(
@@ -286,9 +291,6 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-
-
-
   void fetchData(BuildContext context) async {
     hasData.value = false;
     await Future.delayed(const Duration(seconds: 3));
@@ -297,10 +299,5 @@ class HomeScreen extends StatelessWidget {
       BlocProvider.of<PostGetBloc>(context).add(PostGetSubmittedEvent(loginToken: loginToken, radius: radius, pageSize: pageSize, page: page, longitude: longitude, latitude: latitude));
     }
     hasData.value = true;
-
-  }
-
-  void temporaryList(){
-
   }
 }

@@ -107,12 +107,6 @@ class Data {
         postLikes!.add(PostLikes.fromJson(v));
       });
     }
-    // if (json['postBookmarks'] != null) {
-    //   postBookmarks = <Null>[];
-    //   json['postBookmarks'].forEach((v) {
-    //     postBookmarks!.add(new Null.fromJson(v));
-    //   });
-    // }
     postedBy = json['postedBy'] != null
         ? PostedBy.fromJson(json['postedBy'])
         : null;
@@ -120,12 +114,6 @@ class Data {
         ? ShareDetails.fromJson(json['shareDetails'])
         : null;
     isReported = json['isReported'];
-    // if (json['reportId'] != null) {
-    //   reportId = <Null>[];
-    //   json['reportId'].forEach((v) {
-    //     reportId!.add(new Null.fromJson(v));
-    //   });
-    // }
     fontColor = json['fontColor'];
     backgroundColor = json['backgroundColor'];
     type = json['type'];
@@ -159,10 +147,6 @@ class Data {
     if (postLikes != null) {
       data['postLikes'] = postLikes!.map((v) => v.toJson()).toList();
     }
-    // if (this.postBookmarks != null) {
-    //   data['postBookmarks'] =
-    //       this.postBookmarks!.map((v) => v.toJson()).toList();
-    // }
     if (postedBy != null) {
       data['postedBy'] = postedBy!.toJson();
     }
@@ -170,9 +154,6 @@ class Data {
       data['shareDetails'] = shareDetails!.toJson();
     }
     data['isReported'] = isReported;
-    // if (this.reportId != null) {
-    //   data['reportId'] = this.reportId!.map((v) => v.toJson()).toList();
-    // }
     data['fontColor'] = fontColor;
     data['backgroundColor'] = backgroundColor;
     data['type'] = type;
@@ -232,18 +213,6 @@ class PostComments {
     sId = json['_id'];
     comment = json['comment'];
     createdAt = json['createdAt'];
-    // if (json['replyComment'] != null) {
-    //   replyComment = <Null>[];
-    //   json['replyComment'].forEach((v) {
-    //     replyComment!.add(new Null.fromJson(v));
-    //   });
-    // }
-    // if (json['reportId'] != null) {
-    //   reportId = <Null>[];
-    //   json['reportId'].forEach((v) {
-    //     reportId!.add(new Null.fromJson(v));
-    //   });
-    // }
     firstName = json['firstName'];
     lastName = json['lastName'];
     profilePicUrl = json['profilePicUrl'];
@@ -256,12 +225,6 @@ class PostComments {
     data['_id'] = sId;
     data['comment'] = comment;
     data['createdAt'] = createdAt;
-    // if (this.replyComment != null) {
-    //   data['replyComment'] = this.replyComment!.map((v) => v.toJson()).toList();
-    // }
-    // if (this.reportId != null) {
-    //   data['reportId'] = this.reportId!.map((v) => v.toJson()).toList();
-    // }
     data['firstName'] = firstName;
     data['lastName'] = lastName;
     data['profilePicUrl'] = profilePicUrl;
