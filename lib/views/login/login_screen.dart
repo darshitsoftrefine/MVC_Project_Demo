@@ -36,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: kToolbarHeight + 1,
+        //toolbarHeight: kToolbarHeight + 1,
         elevation: 0.0,
         backgroundColor: CustomColors.primaryColor,
         leading: IconButton(
@@ -47,6 +47,8 @@ class _LoginScreenState extends State<LoginScreen> {
       body: BlocListener<LoginBloc, LoginState>(
         listener: (BuildContext context, state) async {
           SharedPreferences preferences = await SharedPreferences.getInstance();
+          preferences.setString('email', emailController.text);
+          preferences.setString('password', passwordController.text);
           if (state is LoginLoadingState) {
             debugPrint("Loading State");
             setState(() {
@@ -55,8 +57,15 @@ class _LoginScreenState extends State<LoginScreen> {
           } else if (state is LoginFailureState) {
             debugPrint("Failure State");
             if(context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Failed")));
+              showDialog(context: context, builder: (BuildContext context) =>
+                  AlertDialog(
+                    title: const Text("You have entered the wrong credentials."),
+                    actions: [
+                      ElevatedButton(onPressed: () {
+                        Navigator.pop(context);
+                      }, child: const Text("Ok"))
+                    ],
+                  ),);
             }
             setState(() {
               isLoad = false;
@@ -230,20 +239,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 24,),
 
-                        isInputValid ? isLoad ? const CircularProgressIndicator() : ElevatedButton(onPressed: () async {
-                          SharedPreferences prefs = await SharedPreferences
-                              .getInstance();
-                          prefs.setString('email', emailController.text);
-                          prefs.setString('password', passwordController.text);
-                          //prefs.setString('loginToken', )
-                          if(context.mounted) {
+                        isInputValid ? isLoad ? const CircularProgressIndicator() : ElevatedButton(onPressed: () {
                             BlocProvider.of<LoginBloc>(context).add(
                                 LoginSubmittingEvent());
                             BlocProvider.of<LoginBloc>(context).add(
                                 LoginSubmittedEvent(
                                     email: emailController.text,
                                     password: passwordController.text));
-                          }},
+                          },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: isInputValid ? const Color(
                                     0xFFF8485E) : Colors.grey,
@@ -259,7 +262,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             fixedSize: const Size(393, 48)
                         ), child: const Text(ConstantStrings.buttonText),),
-                        const SizedBox(height: 500,),
+                        //const SizedBox(height: 500,),
                       ],
                     ),
                   ),

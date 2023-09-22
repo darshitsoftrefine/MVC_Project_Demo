@@ -7,7 +7,7 @@ import 'login_state.dart';
 
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  ContactRepository repository;
+  CoupinosLogin repository;
 
   LoginBloc({required this.repository}) : super(LoginInitialState()) {
     on((event, emit) async {

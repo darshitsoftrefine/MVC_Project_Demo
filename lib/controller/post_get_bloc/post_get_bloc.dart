@@ -11,7 +11,7 @@ import '../../model/post_get_data/post_get_repository.dart';
 
 //Home Screen Bloc
 class PostGetBloc extends Bloc<PostGetEvent, PostGetState> {
-  PostRepository repository;
+  PostGetFetch repository;
 
   PostGetBloc({required this.repository}) : super(PostGetInitialState()) {
     on((event, emit) async {
@@ -34,7 +34,7 @@ class PostGetBloc extends Bloc<PostGetEvent, PostGetState> {
 
 //Details Bloc  Post Details Screen Bloc
 class PostDetailsBloc extends Bloc<PostDetailsEvent, PostDetailsState> {
-  PostDetailsRepository repository;
+  PostGetDetailsFetch repository;
 
   PostDetailsBloc({required this.repository}) : super(PostDetailsInitialState()) {
     on((event, emit) async{
@@ -42,7 +42,7 @@ class PostDetailsBloc extends Bloc<PostDetailsEvent, PostDetailsState> {
         emit(PostDetailsLoadingState());
       } else if(event is PostDetailsSubmittedEvent){
         try{
-          Data? postDetails = (await repository.getPostDetails());
+          Data? postDetails = (await repository.getPostDetails(event.id));
           emit(PostDetailsSuccessState(postDetails: postDetails!));
           debugPrint("Success");
         } catch(e){

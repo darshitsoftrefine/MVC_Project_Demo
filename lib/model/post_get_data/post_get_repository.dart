@@ -2,13 +2,9 @@ import 'dart:convert';
 import 'package:coupinos_project/model/post_get_data/post_get_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-abstract class PostRepository{
-  Future<List<Posts>?> getPostDetails(int radius, int pageSize, int page, double longitude, double latitude);
-}
 
-class PostGetFetch extends PostRepository {
+class PostGetFetch {
 
-  @override
   Future<List<Posts>?> getPostDetails(radius, pageSize, page, longitude, latitude) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String? obtainedToken = sharedPreferences.getString('loginToken');

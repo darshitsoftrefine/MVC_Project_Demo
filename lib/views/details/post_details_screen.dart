@@ -3,7 +3,6 @@ import 'package:coupinos_project/views/constants/string_constants.dart';
 import 'package:coupinos_project/views/themes/custom_themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../controller/post_get_bloc/post_details_event.dart';
 import '../../controller/post_get_bloc/post_details_state.dart';
 import '../../controller/post_get_bloc/post_get_bloc.dart';
@@ -13,7 +12,8 @@ import '../utils/get_location.dart';
 import '../utils/get_time.dart';
 
 class PostDetailsScreen extends StatelessWidget {
-  PostDetailsScreen({super.key});
+  final String id;
+  PostDetailsScreen({super.key, required this.id});
 
   final baseUrl = ConstantStrings.baseUrl;
   final ValueNotifier<bool> hasData = ValueNotifier<bool>(false);
@@ -26,7 +26,7 @@ class PostDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return  BlocProvider(create: (context) => PostDetailsBloc(repository: PostGetDetailsFetch())..add(PostDetailsSubmittingEvent()),
-        child: BlocProvider(create: (context) => PostDetailsBloc(repository: PostGetDetailsFetch())..add(PostDetailsSubmittedEvent(id: '')),
+        child: BlocProvider(create: (context) => PostDetailsBloc(repository: PostGetDetailsFetch())..add(PostDetailsSubmittedEvent(id: id)),
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -112,7 +112,7 @@ class PostDetailsScreen extends StatelessWidget {
                                                           } else if (snapshot.hasError) {
                                                             return Text(snapshot.error.toString());
                                                           } else {
-                                                            return const CircularProgressIndicator();
+                                                            return const SizedBox();
                                                           }
                                                         },
                                                       )
@@ -166,7 +166,7 @@ class PostDetailsScreen extends StatelessWidget {
 
                                                   },
                                                       icon: value.postLikes!.isEmpty ? const Icon(Icons.favorite_outline, color: Colors.grey, size: 25,): const Icon(Icons.favorite, color: Colors.red, size: 25,)),
-                                                  value.postLikes!.isEmpty ? const SizedBox():  Text('${value.postLikes?[0].firstName}' '${value.postLikes?[0].lastName}' , style: const TextStyle(fontSize: 12),),
+                                                  Text('${value.postLikes?.length}' , style: const TextStyle(fontSize: 12),),
                                                 ],
                                               ),
                                               Row(
@@ -208,7 +208,9 @@ class PostDetailsScreen extends StatelessWidget {
                                     value.postComments!.isEmpty? const SizedBox(): Padding(padding: const EdgeInsets.only(left: 35.0), child: Text("${value.postComments?[c].comment}"),
                                     ),
                                     const SizedBox(height: 20,),
+
                                     const Expanded(child: SizedBox()),
+
                                     ValueListenableBuilder(
                                       valueListenable: commentController,
                                       builder: (BuildContext context, value, Widget? child) {
@@ -261,12 +263,10 @@ class PostDetailsScreen extends StatelessWidget {
 
   void fetchData(BuildContext context) async {
     hasData.value = false;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var ids = prefs.getString('id');
     await Future.delayed(const Duration(seconds: 3));
     if(context.mounted) {
       BlocProvider.of<PostDetailsBloc>(context).add(PostDetailsSubmittingEvent());
-      BlocProvider.of<PostDetailsBloc>(context).add(PostDetailsSubmittedEvent(id: '$ids'));
+      BlocProvider.of<PostDetailsBloc>(context).add(PostDetailsSubmittedEvent(id: id));
     }
     hasData.value = true;
   }

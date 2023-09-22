@@ -3,7 +3,6 @@ import 'package:coupinos_project/views/constants/string_constants.dart';
 import 'package:coupinos_project/views/details/post_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../controller/post_get_bloc/post_get_bloc.dart';
 import '../../controller/post_get_bloc/post_get_event.dart';
 import '../../controller/post_get_bloc/post_get_state.dart';
@@ -45,9 +44,11 @@ class HomeScreen extends StatelessWidget {
                 height: 23,
                 fit: BoxFit.fitWidth,),
             ),
-            leading: IconButton(onPressed: () {},
-              icon: const Icon(Icons.menu),
-              color: Colors.black,),
+            leading: Builder(
+              builder: (context) => IconButton(onPressed: () => Scaffold.of(context).openDrawer(),
+                  icon: const Icon(Icons.menu),
+                  color: Colors.black,)
+            ),
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(50),
               child: Padding(
@@ -108,6 +109,16 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
+          drawer:  Drawer(
+            child: ListView(
+              padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
+              children: const [
+                ListTile(
+                  title: Text("Logout", style: TextStyle(color: Colors.red, fontSize: 18),),
+                )
+              ],
+            ),
+          ),
           body: BlocListener<PostGetBloc, PostGetState>(
             listener: (context, state) {
               if (state is PostGetSuccessState) {
@@ -142,20 +153,16 @@ class HomeScreen extends StatelessWidget {
                       // Display of the List
 
                       return ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(),
+                        physics: const BouncingScrollPhysics(),
                           itemCount: tempList.length,
                           itemBuilder: (context, index) {
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: GestureDetector(
-                                onTap: ()async{
+                                onTap: (){
                                   // Id store for details screen
-                                  SharedPreferences prefs = await SharedPreferences.getInstance();
-                                  prefs.setString('id', '${tempList[index].sId}');
-                                  if(context.mounted) {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => PostDetailsScreen()),
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => PostDetailsScreen(id: '${tempList[index].sId}')),
                                     );
-                                  }
                                 },
                                 child: Card(
                                   shape: RoundedRectangleBorder(
@@ -198,7 +205,7 @@ class HomeScreen extends StatelessWidget {
                                                           } else if (snapshot.hasError) {
                                                             return Text(snapshot.error.toString());
                                                           } else {
-                                                            return const CircularProgressIndicator();
+                                                            return const SizedBox();
                                                           }
                                                         },
                                                       )
