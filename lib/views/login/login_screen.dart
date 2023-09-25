@@ -47,8 +47,6 @@ class _LoginScreenState extends State<LoginScreen> {
       body: BlocListener<LoginBloc, LoginState>(
         listener: (BuildContext context, state) async {
           SharedPreferences preferences = await SharedPreferences.getInstance();
-          preferences.setString('email', emailController.text);
-          preferences.setString('password', passwordController.text);
           if (state is LoginLoadingState) {
             debugPrint("Loading State");
             setState(() {
@@ -72,6 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
             });
           } else if(state is LoginSuccessState) {
             preferences.setString('loginToken', state.contactDetails.loginToken);
+            preferences.setString('email', state.contactDetails.email);
             debugPrint("Success State ${state.contactDetails.email} ${state.contactDetails.loginToken}");
               if(context.mounted) {
                 Navigator.pushReplacement(context,
@@ -238,8 +237,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
                         const SizedBox(height: 24,),
-
-                        isInputValid ? isLoad ? const CircularProgressIndicator() : ElevatedButton(onPressed: () {
+                        isInputValid ? isLoad ? const CircularProgressIndicator() : ElevatedButton(onPressed: () async{
+                          SharedPreferences preferences = await SharedPreferences.getInstance();
+                          preferences.setString('email', emailController.text);
+                          preferences.setString('password', passwordController.text);
                             BlocProvider.of<LoginBloc>(context).add(
                                 LoginSubmittingEvent());
                             BlocProvider.of<LoginBloc>(context).add(

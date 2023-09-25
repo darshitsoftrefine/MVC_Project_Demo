@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Timer(
         const Duration(seconds: 2),
-            () => loginToken?.isEmpty == null ? Navigator.pushReplacement(context,
+            () => loginToken == null ? Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => const LoginScreen())): Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (context) => HomeScreen())));
   }
