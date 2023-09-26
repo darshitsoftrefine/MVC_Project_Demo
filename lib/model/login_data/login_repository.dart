@@ -1,31 +1,24 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'login_model.dart';
 import 'package:http/http.dart' as http;
 
-
 class CoupinosLogin {
 
-  Future<CoupinoModel> getContactDetails() async {
+  Future<CoupinoModel> getContactDetails(String email, String password) async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      var email = prefs.getString("email");
-      var password = prefs.getString('password');
       final response = await http.post(Uri.parse('https://coupinos-app.azurewebsites.net/login'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(<String, String>{
-          'email': email.toString(),
-          'password': password.toString(),
+          'email': email,
+          'password': password,
         }),
       );
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        debugPrint("Helo ${data['loginToken']}");
-        debugPrint("Hello ${data['contactPerson']}");
         CoupinoModel contDetails = CoupinoModel.fromJson(data);
         return contDetails;
       } else {

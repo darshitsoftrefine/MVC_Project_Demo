@@ -1,6 +1,8 @@
+import 'package:coupinos_project/views/constants/custom_widgets.dart';
 import 'package:coupinos_project/views/constants/image_constants.dart';
 import 'package:coupinos_project/views/constants/string_constants.dart';
 import 'package:coupinos_project/views/details/post_details_screen.dart';
+import 'package:coupinos_project/views/utils/get_email.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,7 +20,6 @@ class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
 
   final String loginToken = "";
-  String emails = "";
   final int radius = 10;
   final int pageSize = 10;
   final int page = 0;
@@ -27,7 +28,6 @@ class HomeScreen extends StatelessWidget {
   final String baseUrl = ConstantStrings.baseUrl;
   final ValueNotifier<bool> hasData = ValueNotifier<bool>(false);
   final ValueNotifier<List<Posts>> refresh = ValueNotifier<List<Posts>>([]);
-  final ValueNotifier<String> local = ValueNotifier<String>("");
 
   @override
   Widget build(BuildContext context) {
@@ -48,10 +48,11 @@ class HomeScreen extends StatelessWidget {
                 fit: BoxFit.fitWidth,),
             ),
             leading: Builder(
-              builder: (context) => IconButton(onPressed: () => Scaffold.of(context).openDrawer(),
+                builder: (context) => IconButton(onPressed: () => Scaffold.of(context).openDrawer(),
                   icon: const Icon(Icons.menu),
                   color: Colors.black,)
             ),
+
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(50),
               child: Padding(
@@ -77,42 +78,15 @@ class HomeScreen extends StatelessWidget {
                             fontSize: 14),),
                       ),
                       const SizedBox(width: 8,),
-                      ElevatedButton(onPressed: () {
-
-                      }, style: ElevatedButton.styleFrom(
-                        fixedSize: const Size(69, 32),
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(32),
-                          side: const BorderSide(width: 1, color: Colors.red),
-                        ),
-                      ),
-                        child: const Text(
-                          "Filter", style: TextStyle(color: Colors.red,
-                            fontSize: 14),),
-                      ),
+                      CustomWidgets().homeAppBarButton('Filter', 69, 32),
                       const SizedBox(width: 8,),
-                      ElevatedButton(onPressed: () {
-
-                      }, style: ElevatedButton.styleFrom(
-                        fixedSize: const Size(79, 32),
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(32),
-                          side: const BorderSide(width: 1, color: Colors.red),
-                        ),
-                      ),
-                        child: const Text(
-                          "Search", style: TextStyle(color: Colors.red,
-                            fontSize: 14),),
-                      ),
+                      CustomWidgets().homeAppBarButton('Search', 79, 32),
                       const SizedBox(height: 30,)
                     ]
                 ),
               ),
             ),
           ),
-
           // Drawer
           drawer:  Drawer(
             child: Container(
@@ -146,71 +120,42 @@ class HomeScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text("${tempList[index].postedBy?.firstName} ${tempList[index].postedBy?.lastName}",
-                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey),
+                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.grey),
                                 ),
-                                ValueListenableBuilder(
-                                  valueListenable: local,
-                                  builder: (BuildContext context, value, Widget? child) {
-                                    return Text(value,
-                                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey),
-                                    );
+                               FutureBuilder(
+                                  future: GetEmail().getEmail(),
+                                 builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                                  if (snapshot.hasData) {
+                                  return Text(snapshot.data!, style: const TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.w400),);
+                                  } else if (snapshot.hasError) {
+                                  return Text(snapshot.error.toString());
+                                  } else {
+                                  return const SizedBox();
+                                   }
                                   },
-                                ),
+                               )
                               ],
                             )
                           ],
                         ),
                       ),
                       const SizedBox(height: 30,),
-                      const ListTile(
-                        leading: Icon(Icons.verified_outlined),
-                        title: Text("Enter verificaton code", style: TextStyle(color: Colors.black, fontSize: 16),),
-                      ),
-                      const ListTile(
-                        leading: Icon(Icons.person_outline),
-                        title: Text("My contents", style: TextStyle(color: Colors.black, fontSize: 16),),
-                      ),
-                      const ListTile(
-                        leading: Icon(Icons.apartment_outlined),
-                        title: Text("Partner", style: TextStyle(color: Colors.black, fontSize: 16),),
-                      ),
-                      const ListTile(
-                        leading: Icon(Icons.camera_alt_outlined),
-                        title: Text("Photo Album", style: TextStyle(color: Colors.black, fontSize: 16),),
-                      ),
-                      const ListTile(
-                        leading: Icon(Icons.notifications_none_outlined),
-                        title: Text("Notifications", style: TextStyle(color: Colors.black, fontSize: 16),),
-                      ),
-                      const ListTile(
-                        leading: Icon(Icons.timer_outlined),
-                        title: Text("Posts In Queue", style: TextStyle(color: Colors.black, fontSize: 16),),
-                      ),
-                      const SizedBox(height: 150,),
-                      const Divider(color: Colors.black,),
-                      const ListTile(
-                        leading: Icon(Icons.settings_outlined),
-                        title: Text("Settings", style: TextStyle(color: Colors.black, fontSize: 16),),
-                      ),
-                      GestureDetector(
-                        onTap: () async{
-                          SharedPreferences prefs = await SharedPreferences.getInstance();
-                          emails = prefs.getString('email')!;
-                          print(emails);
-                          prefs.remove('loginToken');
-                          prefs.remove('email');
-                          prefs.remove('password');
-                          if(context.mounted) {
-                            Navigator.pushReplacement(context,
-                                MaterialPageRoute(
-                                    builder: (context) => const LoginScreen()));
-                          }
-                        },
-                        child: const ListTile(
-                          leading: Icon(Icons.logout, color: Colors.red,),
-                          title: Text("Logout", style: TextStyle(color: Colors.red, fontSize: 16),),
-                        ),
-                      )
+                     CustomWidgets().homeDrawer(),
+                          GestureDetector(
+                            onTap: () async{
+                              SharedPreferences prefs = await SharedPreferences.getInstance();
+                              prefs.remove('loginToken');
+                              if(context.mounted) {
+                                Navigator.pushReplacement(context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const LoginScreen()));
+                              }
+                            },
+                            child: const ListTile(
+                              leading: Icon(Icons.logout, color: Colors.red,),
+                              title: Text("Logout", style: TextStyle(color: Colors.red, fontSize: 16),),
+                            ),
+                          )
                     ],
                   );
                 },
@@ -408,8 +353,6 @@ class HomeScreen extends StatelessWidget {
 
   void fetchData(BuildContext context) async {
     hasData.value = false;
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    local.value = preferences.getString('email')!;
     await Future.delayed(const Duration(seconds: 3));
     if(context.mounted) {
       BlocProvider.of<PostGetBloc>(context).add(PostGetSubmittingEvent());

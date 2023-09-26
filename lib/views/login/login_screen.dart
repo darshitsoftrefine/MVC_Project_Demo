@@ -1,3 +1,4 @@
+import 'package:coupinos_project/views/constants/custom_widgets.dart';
 import 'package:coupinos_project/views/constants/image_constants.dart';
 import 'package:coupinos_project/views/constants/string_constants.dart';
 import 'package:coupinos_project/views/themes/custom_themes.dart';
@@ -30,7 +31,6 @@ class _LoginScreenState extends State<LoginScreen> {
           passwordController.text.isNotEmpty;
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -70,8 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
             });
           } else if(state is LoginSuccessState) {
             preferences.setString('loginToken', state.contactDetails.loginToken);
-            preferences.setString('email', state.contactDetails.email);
-            debugPrint("Success State ${state.contactDetails.email} ${state.contactDetails.loginToken}");
+            debugPrint("Success State ");
               if(context.mounted) {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(
@@ -144,127 +143,33 @@ class _LoginScreenState extends State<LoginScreen> {
                               style: TextStyle(fontSize: 14,
                                   fontWeight: FontWeight.w400),),
                             const SizedBox(height: 8,),
-                            TextFormField(
-                              onChanged: (value) {
-                                checkInput();
-                              },
-                              enabled: true,
-                              style: const TextStyle(color: Colors.black),
-                              controller: emailController,
-                              obscureText: false,
-                              decoration: InputDecoration(
-                                //labelText: label, labelStyle: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w400, fontSize: 16),
-                                fillColor: Colors.grey,
-                                hintText: ConstantStrings.emailHintText,
-                                hintStyle: const TextStyle(
-                                    color: Colors.grey),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  borderSide: const BorderSide(
-                                      color: Colors.black,
-                                      style: BorderStyle.solid
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  borderSide: const BorderSide(
-                                    color: Colors.red,
-                                    width: 1.0,
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  borderSide: const BorderSide(
-                                    color: Colors.grey,
-                                    width: 1.0,
-                                  ),
-                                ),
-                              ),
-                            ),
+                            CustomWidgets().textField(ConstantStrings.emailHintText, emailController, checkInput, false, null),
                             const SizedBox(height: 16,),
                             const Text(ConstantStrings.passwordText,
                                 style: TextStyle(fontSize: 14,
                                     fontWeight: FontWeight.w400)),
                             const SizedBox(height: 8,),
-                            TextFormField(
-                              onChanged: (value) {
-                                checkInput();
-                              },
-                              enabled: true,
-                              style: const TextStyle(color: Colors.black),
-                              controller: passwordController,
-                              obscureText: !_passwordVisible,
-                              decoration: InputDecoration(
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    _passwordVisible
-                                        ? Icons.visibility
-                                        : Icons.visibility_off,
-                                    color: Colors.grey,
-                                  ), onPressed: () {
-                                  setState(() {
-                                    _passwordVisible = !_passwordVisible;
-                                  });
-                                },
-                                ),
-                                fillColor: Colors.grey,
-                                hintText: ConstantStrings.passwordHintText,
-                                hintStyle: const TextStyle(
-                                    color: Colors.grey),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  borderSide: const BorderSide(
-                                      color: Colors.black,
-                                      style: BorderStyle.solid
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  borderSide: const BorderSide(
-                                    color: Colors.red,
-                                    width: 1.0,
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  borderSide: const BorderSide(
-                                    color: Colors.grey,
-                                    width: 1.0,
-                                  ),
-                                ),
-                              ),
-                            ),
+                            CustomWidgets().textField(ConstantStrings.passwordHintText, passwordController, checkInput, !_passwordVisible, IconButton(
+                              icon: Icon(_passwordVisible ? Icons.visibility : Icons.visibility_off,
+                                color: Colors.grey,
+                              ), onPressed: () {
+                              setState(() {
+                                _passwordVisible = !_passwordVisible;
+                              });
+                            },
+                            ),)
                           ],
                         ),
                         const SizedBox(height: 24,),
-                        isInputValid ? isLoad ? const CircularProgressIndicator() : ElevatedButton(onPressed: () async{
-                          SharedPreferences preferences = await SharedPreferences.getInstance();
-                          preferences.setString('email', emailController.text);
-                          preferences.setString('password', passwordController.text);
-                            BlocProvider.of<LoginBloc>(context).add(
-                                LoginSubmittingEvent());
-                            BlocProvider.of<LoginBloc>(context).add(
-                                LoginSubmittedEvent(
-                                    email: emailController.text,
-                                    password: passwordController.text));
-                          },
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: isInputValid ? const Color(
-                                    0xFFF8485E) : Colors.grey,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12)
-                                ),
-                                fixedSize: const Size(393, 48)
-                            ),
-                            child: const Text(ConstantStrings.buttonText)): ElevatedButton(onPressed: (){}, style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12)
-                            ),
-                            fixedSize: const Size(393, 48)
-                        ), child: const Text(ConstantStrings.buttonText),),
-                        //const SizedBox(height: 500,),
-                      ],
+                        isInputValid ? isLoad ? const CircularProgressIndicator() : CustomWidgets().loginButtonAble(() async{
+                          BlocProvider.of<LoginBloc>(context).add(LoginSubmittingEvent());
+                           BlocProvider.of<LoginBloc>(context).add(LoginSubmittedEvent(
+                            email: emailController.text,
+                            password: passwordController.text)
+                          );
+                            },
+                          isInputValid ? const Color(0xFFF8485E) : Colors.grey,) : CustomWidgets().loginButtonDisable()
+                      ]
                     ),
                   ),
                 ),
@@ -273,16 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(
-            bottom: 16.0, left: 80, right: 16, top: 10),
-        child: Container(
-            color: Colors.white,
-            child: const Text(ConstantStrings.bottomText, style: TextStyle(
-                color: Color(0xFFF8485E),
-                fontWeight: FontWeight.w600,
-                fontSize: 14),)),
-      ),
+      bottomNavigationBar: CustomWidgets().loginBottomBar(),
     );
   }
 }

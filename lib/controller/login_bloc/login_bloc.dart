@@ -15,11 +15,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         emit(LoginLoadingState());
       } else if(event is LoginSubmittedEvent){
         try{
-          CoupinoModel contactDetails = await repository.getContactDetails();
+          CoupinoModel contactDetails = await repository.getContactDetails(event.email, event.password);
           emit(LoginSuccessState(contactDetails: contactDetails));
           debugPrint("Success");
         }catch(e){
-          debugPrint("Error $e");
+          debugPrint("Error: $e");
           emit(LoginFailureState());
         }
       }
